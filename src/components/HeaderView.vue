@@ -49,7 +49,7 @@ export default {
 </script>
 
 <style lang="css" scoped>
-#header_wrap{ width: 1920px; height: 95px; background-color: antiquewhite;}
+#header_wrap{ width: 1920px; height: 95px; background-color: antiquewhite; margin: 0 auto;}
 .header_wrap_inner{ width: 1200px; height:95px; background-color: aquamarine; margin: 0 auto;}
 .menu_btn, .logo{ float: left;}
 .logo>a>img{ width: 150px;}
