@@ -14,6 +14,7 @@
           placeholder="이메일을 입력하세요."
         />
       </div>
+
       <div>
         <label for="pw"></label>
         <input
@@ -49,6 +50,7 @@ import { useRouter } from "vue-router";
 import Cookies from "js-cookie";
 import HeaderPage from "@/components/HeaderPage.vue";
 import FooterPage from "@/components/FooterPage.vue";
+import { useStore } from "vuex";
 
 export default {
   components: {
@@ -56,18 +58,18 @@ export default {
     FooterPage: FooterPage,
   },
   setup() {
+    const router = useRouter();
+    const store = useStore();
+
     const state = reactive({
       form: {
         email: "",
         password: "",
       },
-      accessToken: Cookies.get("accessToken"),
-      refreshToken: Cookies.get("refreshToken"),
       naverClientId: "UWRvT59b1Pv1JV8c8_T4",
       naverCallbackUrl: "http://localhost:8080",
       naverstates: Math.random().toString(36).slice(2, 11),
     });
-    const router = useRouter();
 
     // 네이버 로그인을 위한 url 이동
     const naverLogin = () => {
@@ -78,16 +80,16 @@ export default {
       window.location.href = url;
     };
 
+    //일반로그인
     const submit = async () => {
       await axios
         .post(`/api/members/login`, state.form)
         .then((res) => {
           console.log(res);
-          window.alert("로그인에 성공하셨습니다.");
+          window.alert("로그인 되었습니다.");
 
-          //로그인 성공시 토큰(accessToken, grantType, refreshToken) 쿠키값 설정
-          Cookies.set("accessToken", res.data.accessToken);
-          Cookies.set("refreshToken", res.data.refreshToken);
+          //vuex에 로그인 결과값(isLogin, ATK, RTK값) 저장
+          store.commit("login");
 
           //로그인 성공시 홈으로 이동
           router.push({ path: "/" });
@@ -102,6 +104,7 @@ export default {
       baseURL: "/api",
     });
 
+    //리프레쉬토큰 체크시 사용
     api.interceptors.response.use(
       (response) => response,
       async (error) => {
@@ -110,9 +113,9 @@ export default {
           originalRequest._retry = true;
           const refreshdata = await axios
             .post("/api/members/refreshcheck", {
-              accessToken: Cookies.get("accessToken"),
+              accessToken: Cookies.get("accessToken"), //VUEX에 저장된 값을 불러들이는 것으로 변경 필요
               grantType: "Bearer",
-              refreshToken: Cookies.get("refreshToken"),
+              refreshToken: Cookies.get("refreshToken"), //VUEX에 저장된 값을 불러들이는 것으로 변경 필요
             })
             .catch((err) => {
               window.alert("다시 로그인하세요.", err);
@@ -124,13 +127,13 @@ export default {
           }
           try {
             const { data } = await api.post("/members/refreshaccesstoken", {
-              accessToken: Cookies.get("accessToken"),
+              accessToken: Cookies.get("accessToken"), //VUEX에 저장된 값을 불러들이는 것으로 변경 필요
               grantType: "Bearer",
-              refreshToken: Cookies.get("refreshToken"),
+              refreshToken: Cookies.get("refreshToken"), //VUEX에 저장된 값을 불러들이는 것으로 변경 필요
             });
-            Cookies.set("accessToken", data.accessToken);
+            Cookies.set("accessToken", data.accessToken); //VUEX에 저장된 값을 불러들이는 것으로 변경 필요
             originalRequest.headers.Authorization =
-              "Bearer" + " " + Cookies.get("accessToken");
+              "Bearer" + " " + Cookies.get("accessToken"); //VUEX에 저장된 값을 불러들이는 것으로 변경 필요
             return api(originalRequest);
           } catch (error) {
             console.log(error);
@@ -143,27 +146,9 @@ export default {
       }
     );
 
-    const memberVerify = async () => {
-      await api
-        .post("/members/baba", null, {
-          headers: {
-            Authorization: "Bearer" + " " + Cookies.get("accessToken"),
-          },
-        })
-        .then((res) => {
-          console.log(res);
-          window.alert("회원인증에 성공하셨습니다.");
-        })
-        .catch((err) => {
-          console.log(err);
-          window.alert("회원인증에 실패하셨습니다.");
-        });
-    };
-
     return {
       state,
       submit,
-      memberVerify,
       naverLogin,
     };
   },

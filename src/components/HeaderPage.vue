@@ -42,7 +42,14 @@
         </li>
         <li><a href="/">고객센터</a></li>
         <li><a href="/join">회원가입</a></li>
-        <li><a href="/login">로그인</a></li>
+        <li><a href="/login" v-if="state.isLogin === false">로그인</a></li>
+        <li
+          v-if="state.isLogin === true"
+          @click="logout()"
+          style="cursor: pointer"
+        >
+          로그아웃
+        </li>
       </ul>
     </div>
     <div id="modal_wrap" v-if="state.modalOpen === true">
@@ -92,22 +99,54 @@
 </template>
 
 <script>
-import { reactive } from "vue";
+import { computed, reactive } from "vue";
+import { useStore } from "vuex";
+import axios from "axios";
+import { useRouter } from "vue-router";
+import Cookies from "js-cookie";
 
 export default {
   setup() {
     const state = reactive({
       searchtext: "",
       modalOpen: false,
+      isLogin: "",
     });
+
+    const store = useStore();
+    const router = useRouter();
+
+    //vuex isLogin값
+    state.isLogin = computed(() => store.state.isLogin);
 
     const setModal = () => {
       state.modalOpen = !state.modalOpen;
     };
 
+    //로그아웃
+    const logout = async () => {
+      await axios
+        .post(`/api/members/logout`)
+        .then((res) => {
+          console.log(res);
+          store.commit("logout");
+
+          Cookies.remove("naver_access_token");
+          Cookies.remove("naver_refresh_token");
+
+          alert("로그아웃 되었습니다.");
+          router.push({ path: "/login" });
+        })
+        .catch((err) => {
+          console.log(err);
+          alert("로그아웃을 실패했습니다.");
+        });
+    };
+
     return {
       state,
       setModal,
+      logout,
     };
   },
 };

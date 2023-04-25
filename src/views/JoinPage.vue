@@ -4,21 +4,24 @@
     <div id="join_con">
       <h3 style="margin: 50px">회원가입</h3>
 
-      <div>
+      <div id="guide_email">{{ state.guideEmail }}</div>
+      <div style="margin-left: 86px">
         <label for="id" class="lbl">이메일</label>
         <input
           type="text"
           class="input"
+          ref="email"
           v-model="state.email"
           placeholder="이메일"
         />
+        <span id="Xcheck" @click="emailCheck()">중복확인</span>
       </div>
-
       <div>
         <label for="pw" class="lbl">비밀번호</label>
         <input
           type="password"
           class="input"
+          ref="password"
           v-model="state.password"
           placeholder="비밀번호"
         />
@@ -29,6 +32,7 @@
         <input
           type="password"
           class="input"
+          ref="pwcheck"
           v-model="state.pwcheck"
           placeholder="비밀번호 확인"
         />
@@ -39,6 +43,7 @@
         <input
           type="text"
           class="input"
+          ref="name"
           v-model="state.name"
           placeholder="이름"
         />
@@ -49,6 +54,7 @@
         <input
           type="date"
           class="input"
+          ref="birth"
           v-model="state.birth"
           style="color: #706e6e"
         />
@@ -74,10 +80,12 @@
       </div>
 
       <div>
-        <label for="birth" class="lbl">휴대폰번호</label>
+        <label for="phone" class="lbl">휴대폰번호</label>
         <input
           type="text"
           class="input"
+          ref="phone"
+          :maxlength="11"
           v-model="state.phone"
           placeholder="휴대폰번호"
         />
@@ -88,6 +96,7 @@
         <input
           type="text"
           id="sample6_postcode"
+          ref="postcode"
           v-model="state.postcode"
           style="width: 281px; height: 39px"
           placeholder="우편번호"
@@ -142,8 +151,10 @@
 <script>
 import HeaderPage from "@/components/HeaderPage.vue";
 import FooterPage from "@/components/FooterPage.vue";
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import axios from "axios";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 export default {
   components: {
@@ -151,6 +162,9 @@ export default {
     FooterPage: FooterPage,
   },
   setup() {
+    const router = useRouter();
+    const store = useStore();
+
     const state = reactive({
       postcode: "", //우편번호
       address: "", //주소
@@ -162,7 +176,17 @@ export default {
       birth: "",
       gender: "",
       phone: "",
+      guideEmail: "",
     });
+
+    const email = ref();
+    const password = ref();
+    const pwcheck = ref();
+    const name = ref();
+    const birth = ref();
+    const phone = ref();
+    const postcode = ref();
+    const detailaddress = ref();
 
     const sample6_execDaumPostcode = () => {
       console.log("sample6_execDaumPostcode");
@@ -173,7 +197,6 @@ export default {
           // 각 주소의 노출 규칙에 따라 주소를 조합한다.
           // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
           var addr = ""; // 주소 변수
-          //   var extraAddr = ""; // 참고항목 변수
 
           //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
           if (data.userSelectedType === "R") {
@@ -183,28 +206,6 @@ export default {
             // 사용자가 지번 주소를 선택했을 경우(J)
             addr = data.jibunAddress;
           }
-
-          // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
-          //   if (data.userSelectedType === "R") {
-          //     // 법정동명이 있을 경우 추가한다. (법정리는 제외)
-          //     // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
-          //     if (data.bname !== "" && /[동|로|가]$/g.test(data.bname)) {
-          //       extraAddr += data.bname;
-          //     }
-          //     // 건물명이 있고, 공동주택일 경우 추가한다.
-          //     if (data.buildingName !== "" && data.apartment === "Y") {
-          //       extraAddr +=
-          //         extraAddr !== "" ? ", " + data.buildingName : data.buildingName;
-          //     }
-          //     // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
-          //     if (extraAddr !== "") {
-          //       extraAddr = " (" + extraAddr + ")";
-          //     }
-          //     // 조합된 참고항목을 해당 필드에 넣는다.
-          //     document.getElementById("sample6_extraAddress").value = extraAddr;
-          //   } else {
-          //     document.getElementById("sample6_extraAddress").value = "";
-          //   }
 
           // 우편번호와 주소 정보를 해당 필드에 넣는다.
           document.getElementById("sample6_postcode").value = data.zonecode;
@@ -219,6 +220,61 @@ export default {
 
     //회원가입
     const join = async () => {
+      if (state.email === "") {
+        alert("이메일을 입력하세요.");
+        email.value.focus();
+        return false;
+      }
+      if (state.password === "") {
+        alert("패스워드를 입력하세요.");
+        password.value.focus();
+        return false;
+      }
+      if (state.pwcheck === "") {
+        alert("패스워드 확인을 입력하세요.");
+        pwcheck.value.focus();
+        return false;
+      }
+      if (state.name === "") {
+        alert("이름을 입력하세요.");
+        name.value.focus();
+        return false;
+      }
+      if (state.birth === "") {
+        alert("생일을 입력하세요.");
+        birth.value.focus();
+        return false;
+      }
+      if (state.postcode === "") {
+        alert("주소를 입력하세요.");
+        birth.value.focus();
+        return false;
+      }
+      if (state.detailaddress === "") {
+        alert("상세주소를 입력하세요.");
+        detailaddress.value.focus();
+        return false;
+      }
+      if (state.gender === "") {
+        alert("성별을 선택하세요.");
+        return false;
+      }
+      if (state.phone === "") {
+        alert("전화번호를 입력하세요.");
+        phone.value.focus();
+        return false;
+      }
+      if (isNaN(state.phone)) {
+        alert("숫자만 입력해주세요.");
+        state.phone = "";
+        phone.value.focus();
+        return false;
+      }
+      if (state.password !== state.pwcheck) {
+        alert("패스워드가 일치하지 않습니다.");
+        pwcheck.value.focus();
+        return false;
+      }
       await axios
         .post(`/api/members/join`, {
           email: state.email,
@@ -229,11 +285,45 @@ export default {
           name: state.name,
           birth: state.birth,
           gender: state.gender,
-          phone: state.phone,
+          phone:
+            state.phone.slice(0, 3) +
+            "-" +
+            state.phone.slice(3, 7) +
+            "-" +
+            state.phone.slice(7, 11),
         })
         .then((res) => {
           console.log(res);
           window.alert("회원가입 되었습니다.");
+          store.commit("login");
+          router.push({ path: "/" });
+        })
+        .catch((err) => {
+          console.log(err);
+          alert("잘못된 회원가입 요청입니다.");
+        });
+    };
+
+    //이메일 중복체크
+    const emailCheck = async () => {
+      if (state.email === "") {
+        alert("이메일을 입력하세요.");
+        email.value.focus();
+        return false;
+      }
+
+      await axios
+        .get(`/api/members/emailcheck?email=${state.email}`)
+        .then((res) => {
+          if (res.data === 0) {
+            if (state.email.includes("@") === false) {
+              state.guideEmail = "올바른 메일 형식이 아닙니다.";
+              return false;
+            }
+            state.guideEmail = "사용가능한 메일입니다.";
+          } else if (res.data >= 1) {
+            state.guideEmail = "이미 사용중인 메일입니다.";
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -252,6 +342,15 @@ export default {
       state,
       sample6_execDaumPostcode,
       join,
+      email,
+      password,
+      pwcheck,
+      name,
+      birth,
+      phone,
+      postcode,
+      detailaddress,
+      emailCheck,
     };
   },
 };
@@ -315,4 +414,41 @@ export default {
   border: 1px solid #3ddca3;
   margin-left: 10px;
 }
+
+#Xcheck {
+  border: 1px solid #cccccc;
+  cursor: pointer;
+  border-radius: 5px;
+  padding: 7px;
+  /* padding */
+  padding-top: 9px;
+  color: #868484;
+  font-size: 18px;
+}
+
+#guide_email {
+  color: red;
+  height: 39px;
+  color: transparent;
+  text-shadow: 0 0 0 red;
+  margin-right: 200px;
+}
+
+/* 생년월일 input박스 클릭시 달력 나오도록 start*/
+input {
+  position: relative;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background-position: right;
+  background-size: auto;
+  cursor: pointer;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  width: auto;
+}
+/* 생년월일 input박스 클릭시 달력 나오도록 end*/
 </style>
