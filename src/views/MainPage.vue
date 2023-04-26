@@ -1,6 +1,5 @@
 <template>
   <div id="total_wrap">
-    <HeaderPage style="position: fixed; z-index: 300"></HeaderPage>
     <div id="center_wrap">
       <div class="headerpage"></div>
       <header>
@@ -293,13 +292,10 @@
         </div>
       </section>
     </div>
-    <FooterPage></FooterPage>
   </div>
 </template>
 
 <script>
-import HeaderPage from "@/components/HeaderPage.vue";
-import FooterPage from "@/components/FooterPage.vue";
 import { useRoute, useRouter } from "vue-router";
 import { onMounted, reactive } from "vue";
 import axios from "axios";
@@ -307,11 +303,6 @@ import { useStore } from "vuex";
 import Cookies from "js-cookie";
 
 export default {
-  components: {
-    HeaderPage: HeaderPage,
-    FooterPage: FooterPage,
-  },
-
   setup() {
     const route = useRoute();
     const router = useRouter();

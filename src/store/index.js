@@ -3,6 +3,7 @@ import { createStore } from "vuex";
 export default createStore({
   state: {
     isLogin: false, //로그인 상태
+    verifiedInfo: [],
   },
 
   getters: {},
@@ -16,8 +17,11 @@ export default createStore({
     //로그아웃
     logout(state) {
       state.isLogin = false;
-      state.accessToken = "";
-      state.refreshToken = "";
+    },
+
+    //로그인검증성공시 사용자정보
+    verifiedInfo(state, verifiedInfo) {
+      state.verifiedInfo = verifiedInfo;
     },
   },
 

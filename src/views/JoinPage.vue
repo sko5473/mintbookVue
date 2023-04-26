@@ -1,6 +1,5 @@
 <template>
   <div id="join_wrap">
-    <HeaderPage style="position: fixed; z-index: 300"></HeaderPage>
     <div id="join_con">
       <h3 style="margin: 50px">회원가입</h3>
 
@@ -144,23 +143,16 @@
         >
       </div>
     </div>
-    <FooterPage></FooterPage>
   </div>
 </template>
 
 <script>
-import HeaderPage from "@/components/HeaderPage.vue";
-import FooterPage from "@/components/FooterPage.vue";
 import { onMounted, reactive, ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
 export default {
-  components: {
-    HeaderPage: HeaderPage,
-    FooterPage: FooterPage,
-  },
   setup() {
     const router = useRouter();
     const store = useStore();

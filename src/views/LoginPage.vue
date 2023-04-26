@@ -1,6 +1,5 @@
 <template>
   <div id="login_wrap">
-    <HeaderPage style="position: fixed; z-index: 300"></HeaderPage>
     <div id="login_content">
       <div class="logo">
         <img src="../assets/Navigation/logo.png" alt="logo" />
@@ -28,6 +27,9 @@
       <div>
         <button @click="submit()" class="login_btn">로그인</button>
       </div>
+
+      <div id="findIdPw" @click="state.modalState === 1">비밀번호 찾기</div>
+
       <!-- 네이버 로그인 버튼 노출 영역 -->
       <div id="naver_login_btn">
         <img src="../assets/Login/naverlogincircle.png" @click="naverLogin()" />
@@ -38,8 +40,21 @@
           ><button class="join_btn">회원가입</button></router-link
         >
       </div>
+
+      <!-- 아이디 찾기 모달 -->
+      <div class="FindIdPwModal" v-if="state.modalState === 1">
+        <div class="close_btn" @click="state.modalState = 0">X</div>
+        <div>
+          <input
+            type="text"
+            class="input"
+            v-model="state.emailForPw"
+            placeholder="가입시 등록한 이메일을 입력하세요."
+          />
+        </div>
+        <button class="find_btn" @click="sendTempPw()">전송</button>
+      </div>
     </div>
-    <FooterPage></FooterPage>
   </div>
 </template>
 
@@ -48,15 +63,9 @@ import { reactive } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import Cookies from "js-cookie";
-import HeaderPage from "@/components/HeaderPage.vue";
-import FooterPage from "@/components/FooterPage.vue";
 import { useStore } from "vuex";
 
 export default {
-  components: {
-    HeaderPage: HeaderPage,
-    FooterPage: FooterPage,
-  },
   setup() {
     const router = useRouter();
     const store = useStore();
@@ -66,9 +75,11 @@ export default {
         email: "",
         password: "",
       },
+      modalState: 1, // 1: pw찾기 모달창 open,
       naverClientId: "UWRvT59b1Pv1JV8c8_T4",
       naverCallbackUrl: "http://localhost:8080",
       naverstates: Math.random().toString(36).slice(2, 11),
+      emailForPw: "",
     });
 
     // 네이버 로그인을 위한 url 이동
@@ -146,10 +157,35 @@ export default {
       }
     );
 
+    const sendTempPw = async () => {
+      await axios
+        .get(`/api/mail/sendemailpw?userEmail=${state.emailForPw}`)
+
+        .then((res) => {
+          if (res.data == true) {
+            axios
+              .post(`/api/mail/sendemailpw`, { userEmail: state.emailForPw })
+              .then(() => {
+                alert("임시 비밀번호를 전송했습니다.");
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
+          if (res.data == false) {
+            alert("가입된 이메일이 아닙니다.");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
     return {
       state,
       submit,
       naverLogin,
+      sendTempPw,
     };
   },
 };
@@ -217,5 +253,70 @@ export default {
   border: none;
   margin-top: 25px;
   border: 1px solid #3ddca3;
+}
+#findIdPw {
+  cursor: pointer;
+  color: #928c8c;
+  margin-left: 350px;
+  margin-top: 10px;
+  font-size: 17px;
+}
+.FindIdPwModal {
+  width: 700px;
+  height: 400px;
+  border: 1px solid black;
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+}
+
+.FindIdPwBtn {
+  width: 527px;
+  height: 80px;
+  border-radius: 6px;
+  font-size: 27px;
+  cursor: pointer;
+  color: #fff;
+  background-color: #3ddca3;
+  border: none;
+  margin-top: 50px;
+}
+
+.close_btn {
+  font-size: 35px;
+  color: #5f5d5d;
+  margin-left: 620px;
+  margin-top: 13px;
+  cursor: pointer;
+}
+
+.input {
+  height: 39px;
+  outline-style: none; /* 포커스시 발생하는 효과 제거를 원한다면 */
+  -webkit-appearance: none; /* 브라우저별 기본 스타일링 제거 */
+  -moz-appearance: none;
+  appearance: none;
+  border: 0.5px solid #c0c0c0;
+  border-radius: 6px;
+  padding-left: 10px;
+  box-sizing: content-box;
+  width: 500px;
+  margin-bottom: 5px;
+  font-size: 20px;
+}
+
+.find_btn {
+  width: 114px;
+  height: 40px;
+  border-radius: 6px;
+  font-size: 18px;
+  cursor: pointer;
+  color: #fff;
+  background-color: #3ddca3;
+  border: none;
+  margin-top: 10px;
+  margin-right: 400px;
 }
 </style>

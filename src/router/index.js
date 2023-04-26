@@ -20,6 +20,14 @@ import NoticePage from "../views/NoticePage";
 import NoticeDetailPage from "../views/NoticeDetailPage";
 import LoginPage from "../views/LoginPage";
 import JoinPage from "../views/JoinPage";
+import FindIdPw from "../views/FindIdPw";
+import MyPage from "../views/MyPage/MyPage";
+import MemberRevise from "../views/MyPage/MemberRevise";
+import ChoicePage from "../views/MyPage/ChoicePage";
+import CashPointPage from "../views/MyPage/CashPointPage";
+import InquirePage from "../views/MyPage/InquirePage";
+import MyReviewList from "../views/MyPage/MyReviewList";
+import AlimiPage from "../views/MyPage/AlimiPage";
 
 //관리자 파트
 import ALoginPage from "../views/Admin/ALoginPage";
@@ -52,6 +60,46 @@ const routes = [
     path: "/join",
     name: "join",
     component: JoinPage,
+  },
+  {
+    path: "/findidpw",
+    name: "findidpw",
+    component: FindIdPw,
+  },
+  {
+    path: "/mypage/mypage",
+    name: "mypage",
+    component: MyPage,
+  },
+  {
+    path: "/mypage/choice",
+    name: "choice",
+    component: ChoicePage,
+  },
+  {
+    path: "/mypage/cashpoint",
+    name: "cashpoint",
+    component: CashPointPage,
+  },
+  {
+    path: "/mypage/inquire",
+    name: "inquire",
+    component: InquirePage,
+  },
+  {
+    path: "/mypage/myreviewlist",
+    name: "myreviewlist",
+    component: MyReviewList,
+  },
+  {
+    path: "/mypage/alimi",
+    name: "alimi",
+    component: AlimiPage,
+  },
+  {
+    path: "/mypage/memberrevise",
+    name: "memberrevise",
+    component: MemberRevise,
   },
   {
     path: "/search",

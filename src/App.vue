@@ -1,32 +1,41 @@
 <template>
+  <header-page />
   <router-view />
+  <footer-page />
 </template>
-
 <script>
-// import { onMounted } from "vue";
-// import axios from "axios";
-// import { useStore } from "vuex";
+import { onMounted } from "vue";
+import axios from "axios";
+import { useStore } from "vuex";
+import HeaderPage from "@/components/HeaderPage.vue";
+import FooterPage from "@/components/FooterPage.vue";
+
 export default {
-  components: {},
+  components: {
+    HeaderPage: HeaderPage,
+    FooterPage: FooterPage,
+  },
   setup() {
-    // const store = useStore();
+    const store = useStore();
 
-    // const logincheck = async () => {
-    //   await axios
-    //     .post(`/api/members/logincheck`)
-    //     .then((res) => {
-    //       console.log(res);
-    //       store.commit("login");
-    //     })
-    //     .catch((err) => {
-    //       console.log(err);
-    //       store.commit("logout");
-    //     });
-    // };
+    //로그인 검증로직
+    const logincheck = async () => {
+      await axios
+        .post(`/api/members/logincheck`)
+        .then((res) => {
+          console.log(res);
+          store.commit("login");
+          store.commit("verifiedInfo", res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+          store.commit("logout");
+        });
+    };
 
-    // onMounted(() => {
-    //   logincheck();
-    // });
+    onMounted(() => {
+      logincheck();
+    });
     return {};
   },
 };

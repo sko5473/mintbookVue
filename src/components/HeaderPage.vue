@@ -28,7 +28,7 @@
       </ul>
       <ul id="nav_right_wrap">
         <li>
-          <a href="/admin/book"
+          <a href="/mypage/mypage"
             ><img
               src="../assets/Navigation/profile.png"
               id="profile"
@@ -36,11 +36,11 @@
           /></a>
         </li>
         <li>
-          <a href="/"
+          <a href="/cart"
             ><img src="../assets/Navigation/cart.png" id="cart" alt="cart"
           /></a>
         </li>
-        <li><a href="/">고객센터</a></li>
+        <li><a href="/cs">고객센터</a></li>
         <li><a href="/join">회원가입</a></li>
         <li><a href="/login" v-if="state.isLogin === false">로그인</a></li>
         <li

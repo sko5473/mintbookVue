@@ -1,6 +1,5 @@
 <template>
   <div class="total_wrap">
-    <HeaderPage style="position: fixed; z-index: 300"></HeaderPage>
     <div class="center_wrap">
       <div class="headerpage"></div>
       <div id="divide_section">
@@ -96,21 +95,13 @@
         <el-backtop :right="70" :bottom="70" style="color: #3ddca3" />
       </div>
     </div>
-    <FooterPage></FooterPage>
   </div>
 </template>
 
 <script>
-import HeaderPage from "@/components/HeaderPage.vue";
-import FooterPage from "@/components/FooterPage.vue";
 import { reactive } from "vue";
 
 export default {
-  components: {
-    HeaderPage: HeaderPage,
-    FooterPage: FooterPage,
-  },
-
   setup() {
     const state = reactive({
       list: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
