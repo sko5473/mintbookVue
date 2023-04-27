@@ -44,6 +44,7 @@ import AEventSearchPage from "../views/Admin/AEventSearchPage";
 import AEventDetailPage from "../views/Admin/AEventDetailPage";
 import AEventEditPage from "../views/Admin/AEventEditPage";
 import AEventRegisterPage from "../views/Admin/AEventRegisterPage";
+import AMemberPage from "../views/Admin/AMemberPage";
 
 const routes = [
   {
@@ -192,6 +193,11 @@ const routes = [
     component: ABookPage,
   },
   {
+    path: "/admin/member",
+    name: "adminmember",
+    component: AMemberPage,
+  },
+  {
     path: "/admin/book/search",
     name: "adminbooksearch",
     component: ABookSearchPage,
@@ -257,5 +263,4 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
-
 export default router;

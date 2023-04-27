@@ -150,12 +150,10 @@
 import { onMounted, reactive, ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
-import { useStore } from "vuex";
 
 export default {
   setup() {
     const router = useRouter();
-    const store = useStore();
 
     const state = reactive({
       postcode: "", //우편번호
@@ -287,8 +285,7 @@ export default {
         .then((res) => {
           console.log(res);
           window.alert("회원가입 되었습니다.");
-          store.commit("login");
-          router.push({ path: "/" });
+          router.push({ path: "/login" });
         })
         .catch((err) => {
           console.log(err);
@@ -357,7 +354,7 @@ export default {
 #join_con {
   text-align: center;
   overflow: hidden;
-  margin-top: 100px;
+  margin-top: 50px;
 }
 
 .lbl {

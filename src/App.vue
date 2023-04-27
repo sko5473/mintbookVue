@@ -4,9 +4,6 @@
   <footer-page />
 </template>
 <script>
-import { onMounted } from "vue";
-import axios from "axios";
-import { useStore } from "vuex";
 import HeaderPage from "@/components/HeaderPage.vue";
 import FooterPage from "@/components/FooterPage.vue";
 
@@ -16,26 +13,6 @@ export default {
     FooterPage: FooterPage,
   },
   setup() {
-    const store = useStore();
-
-    //로그인 검증로직
-    const logincheck = async () => {
-      await axios
-        .post(`/api/members/logincheck`)
-        .then((res) => {
-          console.log(res);
-          store.commit("login");
-          store.commit("verifiedInfo", res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-          store.commit("logout");
-        });
-    };
-
-    onMounted(() => {
-      logincheck();
-    });
     return {};
   },
 };

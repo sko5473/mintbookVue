@@ -28,7 +28,7 @@
         <button @click="submit()" class="login_btn">로그인</button>
       </div>
 
-      <div id="findIdPw" @click="state.modalState === 1">비밀번호 찾기</div>
+      <div id="findIdPw" @click="state.modalState = 1">비밀번호 찾기</div>
 
       <!-- 네이버 로그인 버튼 노출 영역 -->
       <div id="naver_login_btn">
@@ -41,15 +41,17 @@
         >
       </div>
 
-      <!-- 아이디 찾기 모달 -->
+      <!-- 비밀번호 찾기 모달 -->
       <div class="FindIdPwModal" v-if="state.modalState === 1">
         <div class="close_btn" @click="state.modalState = 0">X</div>
+        <div class="findpw_title">비밀번호 찾기</div>
         <div>
           <input
             type="text"
             class="input"
             v-model="state.emailForPw"
             placeholder="가입시 등록한 이메일을 입력하세요."
+            style="margin-top: 10px"
           />
         </div>
         <button class="find_btn" @click="sendTempPw()">전송</button>
@@ -75,7 +77,7 @@ export default {
         email: "",
         password: "",
       },
-      modalState: 1, // 1: pw찾기 모달창 open,
+      modalState: 0, // 1: pw찾기 모달창 open,
       naverClientId: "UWRvT59b1Pv1JV8c8_T4",
       naverCallbackUrl: "http://localhost:8080",
       naverstates: Math.random().toString(36).slice(2, 11),
@@ -101,6 +103,10 @@ export default {
 
           //vuex에 로그인 결과값(isLogin, ATK, RTK값) 저장
           store.commit("login");
+
+          axios.post(`/api/members/admincheck`).then(() => {
+            store.commit("isAdmin");
+          });
 
           //로그인 성공시 홈으로 이동
           router.push({ path: "/" });
@@ -157,27 +163,29 @@ export default {
       }
     );
 
+    //비밀번호 찾기(임시 비밀번호 전송)
     const sendTempPw = async () => {
       await axios
-        .get(`/api/mail/sendemailpw?userEmail=${state.emailForPw}`)
-
+        .get(`/api/mail/checkemail?userEmail=${state.emailForPw}`)
         .then((res) => {
-          if (res.data == true) {
+          if (res.data.check == true) {
             axios
-              .post(`/api/mail/sendemailpw`, { userEmail: state.emailForPw })
+              .get(`/api/mail/sendemailpw?userEmail=${state.emailForPw}`)
               .then(() => {
                 alert("임시 비밀번호를 전송했습니다.");
               })
               .catch((err) => {
                 console.log(err);
+                alert("메일 전송을 실패했습니다.");
               });
           }
-          if (res.data == false) {
+          if (res.data.check == false) {
             alert("가입된 이메일이 아닙니다.");
           }
         })
         .catch((err) => {
           console.log(err);
+          alert("오류가 발생했습니다. 관리자에게 문의하세요.");
         });
     };
 
@@ -262,11 +270,11 @@ export default {
   font-size: 17px;
 }
 .FindIdPwModal {
-  width: 700px;
-  height: 400px;
+  width: 600px;
+  height: 300px;
   border: 1px solid black;
   position: absolute;
-  left: 50%;
+  left: 58%;
   top: 55%;
   transform: translate(-50%, -50%);
   background-color: #fff;
@@ -287,8 +295,8 @@ export default {
 .close_btn {
   font-size: 35px;
   color: #5f5d5d;
-  margin-left: 620px;
-  margin-top: 13px;
+  margin-left: 530px;
+  margin-top: 8px;
   cursor: pointer;
 }
 
@@ -318,5 +326,9 @@ export default {
   border: none;
   margin-top: 10px;
   margin-right: 400px;
+}
+.findpw_title {
+  font-size: 23px;
+  margin-bottom: 10px;
 }
 </style>

@@ -40,6 +40,10 @@
             ><img src="../assets/Navigation/cart.png" id="cart" alt="cart"
           /></a>
         </li>
+        <li v-if="state.isAdmin == 'ADMIN' && state.isLogin == true">
+          <!-- <li v-if="$store.state.isAdmin == 'ADMIN'"> -->
+          <a href="/admin/book">관리자페이지</a>
+        </li>
         <li><a href="/cs">고객센터</a></li>
         <li><a href="/join">회원가입</a></li>
         <li><a href="/login" v-if="state.isLogin === false">로그인</a></li>
@@ -111,13 +115,15 @@ export default {
       searchtext: "",
       modalOpen: false,
       isLogin: "",
+      isAdmin: "",
     });
 
     const store = useStore();
     const router = useRouter();
 
-    //vuex isLogin값
     state.isLogin = computed(() => store.state.isLogin);
+
+    state.isAdmin = computed(() => store.state.isAdmin);
 
     const setModal = () => {
       state.modalOpen = !state.modalOpen;
@@ -179,6 +185,8 @@ a:hover {
   border-bottom: 0.5px solid #3ddca3;
   background: white;
   margin: 0 auto;
+  position: relative;
+  z-index: 3;
 }
 
 #center_wrap {
