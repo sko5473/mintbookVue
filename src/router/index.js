@@ -22,7 +22,7 @@ import LoginPage from "../views/LoginPage";
 import JoinPage from "../views/JoinPage";
 import FindIdPw from "../views/FindIdPw";
 import MyPage from "../views/MyPage/MyPage";
-import MemberRevise from "../views/MyPage/MemberRevise";
+import MyInfoEditPage from "../views/MyPage/MyInfoEditPage";
 import ChoicePage from "../views/MyPage/ChoicePage";
 import CashPointPage from "../views/MyPage/CashPointPage";
 import InquirePage from "../views/MyPage/InquirePage";
@@ -98,9 +98,9 @@ const routes = [
     component: AlimiPage,
   },
   {
-    path: "/mypage/memberrevise",
-    name: "memberrevise",
-    component: MemberRevise,
+    path: "/mypage/myinfoedit",
+    name: "myinfoedit",
+    component: MyInfoEditPage,
   },
   {
     path: "/search",
