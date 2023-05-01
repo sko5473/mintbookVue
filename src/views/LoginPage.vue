@@ -21,6 +21,7 @@
           type="password"
           v-model="state.form.password"
           placeholder="패스워드를 입력하세요."
+          @keyup.enter="submit()"
         />
       </div>
 

@@ -45,6 +45,10 @@ import AEventDetailPage from "../views/Admin/AEventDetailPage";
 import AEventEditPage from "../views/Admin/AEventEditPage";
 import AEventRegisterPage from "../views/Admin/AEventRegisterPage";
 import AMemberPage from "../views/Admin/AMemberPage";
+import ANoticePage from "../views/Admin/ANoticePage";
+import ANoticeRegisterPage from "../views/Admin/ANoticeRegisterPage";
+import ANoticeDetailPage from "../views/Admin/ANoticeDetailPage";
+import ANoticeEditPage from "../views/Admin/ANoticeEditPage";
 
 const routes = [
   {
@@ -256,6 +260,27 @@ const routes = [
     path: "/admin/event/register",
     name: "admineventregister",
     component: AEventRegisterPage,
+  },
+  {
+    path: "/admin/notice",
+    name: "adminnotice",
+    component: ANoticePage,
+  },
+  {
+    path: "/admin/notice/register",
+    name: "adminnoticeregister",
+    component: ANoticeRegisterPage,
+  },
+  {
+    path: "/admin/notice/detail",
+    name: "adminnoticedetail",
+    component: ANoticeDetailPage,
+    meta: { isNoticePage: true },
+  },
+  {
+    path: "/admin/notice/edit",
+    name: "adminnoticeedit",
+    component: ANoticeEditPage,
   },
 ];
 

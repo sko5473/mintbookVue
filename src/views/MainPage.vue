@@ -55,7 +55,7 @@
             </div>
           </div>
           <div class="content_bottom">
-            <div class="content_book_wrap">
+            <div class="content_book_wrap" @click="godetail()">
               <p class="c_ranking">01.</p>
               <img
                 src="../assets/MainPage/book1.jpg"
@@ -324,6 +324,10 @@ export default {
       snsType: "",
     });
 
+    const godetail = () => {
+      router.push({ path: "/book", query: { id: 1 } });
+    };
+
     // NAVER 콜백 받는 로직
     const naverCallback = async () => {
       if (route.query.code !== undefined) {
@@ -472,8 +476,10 @@ export default {
     onMounted(() => {
       naverCallback();
     });
+
     return {
       state,
+      godetail,
     };
   },
 };

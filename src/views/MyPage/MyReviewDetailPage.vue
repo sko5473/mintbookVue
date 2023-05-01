@@ -21,25 +21,67 @@
         </ul>
       </div>
     </div>
-    <div class="right_content">
-      <h4>리뷰내역</h4>
+
+    <div class="right_content" v-if="state.pageState === 1">
+      <h4>리뷰상세</h4>
       <table class="table">
-        <thead>
-          <th width="50%">도서명</th>
-          <th width="25%">작성일</th>
-          <th width="25%">비고</th>
-        </thead>
         <tbody>
-          <tr v-for="(data, idx) in state.reviewlist" :key="idx">
-            <td class="td">{{ data.book.bookName }}</td>
-            <td class="td">{{ data.regDate.slice(0, 10) }}</td>
-            <td class="td">
-              <button class="btn">수정</button>
-              <button class="btn">삭제</button>
+          <tr>
+            <th scope="row">별점</th>
+            <td colspan="3" style="text-align: left"></td>
+          </tr>
+          <tr>
+            <th scope="row">내용</th>
+            <td colspan="3">
+              <textarea
+                cols="30"
+                rows="10"
+                class="input"
+                placeholder="내용을 입력하세요."
+              ></textarea>
             </td>
           </tr>
         </tbody>
       </table>
+      <div id="register_wrap">
+        <button @click="noticeRevise()">수정</button>
+        <button @click="cancel()">취소</button>
+      </div>
+    </div>
+
+    <div class="right_content" v-if="state.pageState === 2">
+      <h4>리뷰수정</h4>
+      <table class="table">
+        <tbody>
+          <tr>
+            <th scope="row">별점</th>
+            <td colspan="3" style="text-align: left">
+              <select v-model="state.reviseStar">
+                <option value="5.0">5점</option>
+                <option value="4.0">4점</option>
+                <option value="3.0">3점</option>
+                <option value="2.0">2점</option>
+                <option value="1.0">1점</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">내용</th>
+            <td colspan="3">
+              <textarea
+                cols="30"
+                rows="10"
+                class="input"
+                placeholder="내용을 입력하세요."
+              ></textarea>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div id="register_wrap">
+        <button @click="noticeRevise()">수정</button>
+        <button @click="cancel()">취소</button>
+      </div>
     </div>
   </div>
 </template>
@@ -51,24 +93,11 @@ export default {
   setup() {
     const state = reactive({
       reviewlist: [],
+      pageState: 1,
+      reviseStar: 0,
     });
 
-    //내 리뷰리스트
-    const myReviewList = async () => {
-      await axios
-        .get(`/api/myreviewall`)
-        .then((res) => {
-          console.log("내 리뷰리스트", res);
-          state.reviewlist = res.data;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
-
-    onMounted(() => {
-      myReviewList();
-    });
+    onMounted(() => {});
 
     return {
       state,

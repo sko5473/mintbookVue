@@ -133,16 +133,16 @@
         </div>
         <div class="review_btn">
           <div id="review_btn_left">
-            <select name="" id="">
-              <option value="">5점</option>
-              <option value="">4점</option>
-              <option value="">3점</option>
-              <option value="">2점</option>
-              <option value="">1점</option>
+            <select v-model="state.star">
+              <option value="5.0">5점</option>
+              <option value="4.0">4점</option>
+              <option value="3.0">3점</option>
+              <option value="2.0">2점</option>
+              <option value="1.0">1점</option>
             </select>
           </div>
           <div id="review_btn_right">
-            <button id="r_register_btn">리뷰등록</button>
+            <button id="r_register_btn" @click="reviewWrite()">리뷰등록</button>
           </div>
         </div>
         <textarea
@@ -150,6 +150,7 @@
           id=""
           rows="10"
           placeholder="내용을 10자 이상 입력해 주세요. 주제와 무관한 댓글, 악플, 배송문의 등의 글은 임의 삭제될 수 있습니다."
+          v-model="state.content"
         ></textarea>
         <div class="reviewlist_top">
           <div class="reviewlist_top_left">
@@ -333,12 +334,38 @@
 
 <script>
 import { reactive, ref } from "vue";
+import { useRoute } from "vue-router";
+import axios from "axios";
 
 export default {
   setup() {
+    const route = useRoute();
+
     const state = reactive({
       num: ref(1),
+      star: 0, //리뷰 평점
+      content: "", //리뷰 내용
+      bookId: route.query.id,
     });
+
+    //리뷰 작성
+    const reviewWrite = async () => {
+      await axios
+        .post(`/api/review`, {
+          star: state.star,
+          content: state.content,
+          bookId: state.bookId,
+        })
+        .then(() => {
+          alert("등록되었습니다.");
+          state.star = null;
+          state.content = null;
+        })
+        .catch((err) => {
+          console.log(err);
+          alert("리뷰등록 실패하였습니다. 관리자에게 문의해주세요.");
+        });
+    };
 
     const handleChange = (value) => {
       console.log(value);
@@ -347,6 +374,7 @@ export default {
     return {
       state,
       handleChange,
+      reviewWrite,
     };
   },
 };
