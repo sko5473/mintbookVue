@@ -15,7 +15,7 @@
           <li><a href="/mypage/choice">찜</a></li>
           <li><a href="/mypage/cashpoint">캐시/포인트</a></li>
           <li><a href="/mypage/inquire">1:1 문의내역</a></li>
-          <li><a href="/mypage/myreviewlist" id="current">리뷰내역</a></li>
+          <li><a href="/mypage/review/list" id="current">리뷰내역</a></li>
           <li><a href="/mypage/alimi">알리미</a></li>
           <li><a href="/mypage/myinfoedit">회원정보수정</a></li>
         </ul>
@@ -28,24 +28,21 @@
         <tbody>
           <tr>
             <th scope="row">별점</th>
-            <td colspan="3" style="text-align: left"></td>
+            <td style="text-align: left">
+              {{ state.reviewone.star }}
+            </td>
           </tr>
           <tr>
             <th scope="row">내용</th>
-            <td colspan="3">
-              <textarea
-                cols="30"
-                rows="10"
-                class="input"
-                placeholder="내용을 입력하세요."
-              ></textarea>
-            </td>
+            <td style="text-align: left">{{ state.reviewone.content }}</td>
           </tr>
         </tbody>
       </table>
       <div id="register_wrap">
-        <button @click="noticeRevise()">수정</button>
-        <button @click="cancel()">취소</button>
+        <button @click="state.pageState = 2" class="btn">수정</button>
+        <router-link to="/mypage/review/list"
+          ><button class="btn">취소</button></router-link
+        >
       </div>
     </div>
 
@@ -55,8 +52,17 @@
         <tbody>
           <tr>
             <th scope="row">별점</th>
-            <td colspan="3" style="text-align: left">
-              <select v-model="state.reviseStar">
+            <td colspan="3">
+              <select
+                v-model="state.reviseStar"
+                style="
+                  width: 100px;
+                  border-radius: 10px;
+                  border: 1px solid #ccc;
+                  float: left;
+                  margin-left: 80px;
+                "
+              >
                 <option value="5.0">5점</option>
                 <option value="4.0">4점</option>
                 <option value="3.0">3점</option>
@@ -73,14 +79,15 @@
                 rows="10"
                 class="input"
                 placeholder="내용을 입력하세요."
+                v-model="state.content"
               ></textarea>
             </td>
           </tr>
         </tbody>
       </table>
       <div id="register_wrap">
-        <button @click="noticeRevise()">수정</button>
-        <button @click="cancel()">취소</button>
+        <button @click="reviewRevise()" class="btn">수정</button>
+        <button @click="state.pageState = 1" class="btn">취소</button>
       </div>
     </div>
   </div>
@@ -89,18 +96,59 @@
 <script>
 import { onMounted, reactive } from "vue";
 import axios from "axios";
+import { useRoute } from "vue-router";
 export default {
   setup() {
+    const route = useRoute();
+
     const state = reactive({
-      reviewlist: [],
-      pageState: 1,
+      reviewone: [],
+      pageState: 1, // 1 : 페이지 상세보기, 2 : 페이지 수정
+      reviewid: route.query.id,
       reviseStar: 0,
+      content: "",
     });
 
-    onMounted(() => {});
+    //리뷰 1개 데이터 수신
+    const reviewone = async () => {
+      await axios
+        .get(`/api/reviewone?id=${state.reviewid}`)
+        .then((res) => {
+          console.log("1개데이터", res);
+          state.reviewone = res.data;
+          state.reviseStar = res.data.star;
+          state.content = res.data.content;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
+    //리뷰 1개 데이터 수정
+    const reviewRevise = async () => {
+      await axios
+        .put(`/api/review/${state.reviewid}`, {
+          star: state.reviseStar,
+          content: state.content,
+          bookId: state.reviewone.bookId,
+        })
+        .then(() => {
+          alert("수정되었습니다.");
+          state.pageState = 1;
+        })
+        .catch((err) => {
+          alert("수정시 오류가 발생하였습니다. 관리자에게 문의해주세요.");
+          console.log(err);
+        });
+    };
+
+    onMounted(() => {
+      reviewone();
+    });
 
     return {
       state,
+      reviewRevise,
     };
   },
 };
@@ -115,7 +163,7 @@ a {
 #mypage_wrap {
   margin: 0 auto;
   width: 1200px;
-  height: 550px;
+  height: 600px;
   overflow: hidden;
   margin-top: 60px;
   display: flex;
@@ -166,6 +214,7 @@ a {
   margin-bottom: 30px;
   text-align: center;
   line-height: 35px;
+  margin-left: 20px;
 }
 thead {
   background: #f5f5f5;
@@ -178,15 +227,19 @@ thead {
   border: 1px solid #b8b6b6;
   margin-left: 5px;
   border-radius: 10px;
-  width: 69px;
+  width: 100px;
 }
 .td {
   padding: 2px;
 }
+
 .input {
   width: 80%;
   border-radius: 5px;
   border: 0.5px solid rgb(184, 184, 184);
   padding-left: 10px;
+}
+#register_wrap {
+  text-align: center;
 }
 </style>

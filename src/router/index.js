@@ -27,6 +27,7 @@ import ChoicePage from "../views/MyPage/ChoicePage";
 import CashPointPage from "../views/MyPage/CashPointPage";
 import InquirePage from "../views/MyPage/InquirePage";
 import MyReviewList from "../views/MyPage/MyReviewList";
+import MyReviewDetailPage from "../views/MyPage/MyReviewDetailPage";
 import AlimiPage from "../views/MyPage/AlimiPage";
 
 //관리자 파트
@@ -49,6 +50,8 @@ import ANoticePage from "../views/Admin/ANoticePage";
 import ANoticeRegisterPage from "../views/Admin/ANoticeRegisterPage";
 import ANoticeDetailPage from "../views/Admin/ANoticeDetailPage";
 import ANoticeEditPage from "../views/Admin/ANoticeEditPage";
+import AReviewPage from "../views/Admin/AReviewPage";
+import AReviewDetailPage from "../views/Admin/AReviewDetailPage";
 
 const routes = [
   {
@@ -92,9 +95,14 @@ const routes = [
     component: InquirePage,
   },
   {
-    path: "/mypage/myreviewlist",
+    path: "/mypage/review/list",
     name: "myreviewlist",
     component: MyReviewList,
+  },
+  {
+    path: "/mypage/review/detail",
+    name: "myreviewdetail",
+    component: MyReviewDetailPage,
   },
   {
     path: "/mypage/alimi",
@@ -275,12 +283,21 @@ const routes = [
     path: "/admin/notice/detail",
     name: "adminnoticedetail",
     component: ANoticeDetailPage,
-    meta: { isNoticePage: true },
   },
   {
     path: "/admin/notice/edit",
     name: "adminnoticeedit",
     component: ANoticeEditPage,
+  },
+  {
+    path: "/admin/review",
+    name: "adminreview",
+    component: AReviewPage,
+  },
+  {
+    path: "/admin/review/detail",
+    name: "adminreviewdetail",
+    component: AReviewDetailPage,
   },
 ];
 

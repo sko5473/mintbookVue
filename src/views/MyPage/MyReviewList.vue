@@ -31,15 +31,24 @@
         </thead>
         <tbody>
           <tr v-for="(data, idx) in state.reviewlist" :key="idx">
-            <td class="td">{{ data.book.bookName }}</td>
+            <td class="td">{{ data.bookName }}</td>
             <td class="td">{{ data.regDate.slice(0, 10) }}</td>
             <td class="td">
-              <button class="btn">수정</button>
-              <button class="btn">삭제</button>
+              <button class="btn" @click="goDetail(data.reviewid)">수정</button>
+              <button class="btn" @click="deleteMyReview(data.reviewid)">
+                삭제
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
+      <div id="pagination">
+        <el-pagination
+          layout="prev, pager, next"
+          :total="state.reviewTotal"
+          @current-change="handlePage"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -47,23 +56,55 @@
 <script>
 import { onMounted, reactive } from "vue";
 import axios from "axios";
+import { useRouter } from "vue-router";
 export default {
   setup() {
+    const router = useRouter();
+
     const state = reactive({
       reviewlist: [],
+      page: 0,
+      size: 10,
+      reviewTotal: 0,
     });
+
+    //페이지 이동
+    const handlePage = (page) => {
+      state.page = page - 1;
+      myReviewList();
+    };
 
     //내 리뷰리스트
     const myReviewList = async () => {
       await axios
-        .get(`/api/myreviewall`)
+        .get(`/api/myreviewall?page=${state.page}&size=${state.size}`)
         .then((res) => {
           console.log("내 리뷰리스트", res);
-          state.reviewlist = res.data;
+          state.reviewlist = res.data.content;
+          state.reviewTotal = res.data.totalElements;
         })
         .catch((err) => {
           console.log(err);
         });
+    };
+
+    //나의리뷰 삭제
+    const deleteMyReview = (reviewid) => {
+      axios
+        .delete(`/api/review/${reviewid}`)
+        .then(() => {
+          alert("삭제되었습니다.");
+          myReviewList();
+        })
+        .catch((err) => {
+          console.log(err);
+          alert("삭제시 오류가발생하였습니다.");
+        });
+    };
+
+    //나의리뷰 상세페이지 이동
+    const goDetail = (id) => {
+      router.push({ path: "/mypage/review/detail", query: { id: id } });
     };
 
     onMounted(() => {
@@ -72,6 +113,9 @@ export default {
 
     return {
       state,
+      goDetail,
+      handlePage,
+      deleteMyReview,
     };
   },
 };
@@ -86,7 +130,7 @@ a {
 #mypage_wrap {
   margin: 0 auto;
   width: 1200px;
-  height: 550px;
+  height: 650px;
   overflow: hidden;
   margin-top: 60px;
   display: flex;
@@ -159,5 +203,8 @@ thead {
   border-radius: 5px;
   border: 0.5px solid rgb(184, 184, 184);
   padding-left: 10px;
+}
+#pagination {
+  margin-left: 400px;
 }
 </style>

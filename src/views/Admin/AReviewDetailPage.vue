@@ -5,48 +5,35 @@
         <admin-menu-page></admin-menu-page>
       </div>
       <div id="content_wrap">
-        <p id="maintitle">도서 상세</p>
-        <button id="edit" @click="goRevise()">수정</button>
+        <p id="maintitle">리뷰 상세</p>
         <table class="table">
           <tbody>
             <tr>
+              <th scope="row">리뷰번호</th>
+              <td>{{ state.detailrow.reviewid }}</td>
+            </tr>
+            <br />
+            <tr>
+              <th scope="row">작성자</th>
+              <td>{{ state.detailrow.writer }}</td>
+              <th scope="row">작성날짜</th>
+              <td>{{ state.detailrow.regDate }}</td>
+            </tr>
+            <tr>
               <th scope="row">도서명</th>
-              <td colspan="3">{{ state.oneBookData.bookName }}</td>
-            </tr>
-            <tr>
-              <th scope="row">저자명</th>
-              <td>{{ state.oneBookData.author }}</td>
-              <th scope="row">출판사</th>
-              <td>{{ state.oneBookData.publisher }}</td>
-            </tr>
-            <tr>
-              <th scope="row">출판일</th>
-              <td>{{ state.oneBookData.publishDate }}</td>
-              <th scope="row">정가</th>
-              <td>{{ state.oneBookData.price }}</td>
-            </tr>
-            <tr>
+              <td>{{ state.detailrow.bookName }}</td>
               <th scope="row">ISBN</th>
-              <td>{{ state.oneBookData.isbn }}</td>
-              <th scope="row">카테고리</th>
-              <td>{{ state.oneBookData.genre }}</td>
+              <td>{{ state.detailrow.isbn }}</td>
             </tr>
             <tr>
-              <th scope="row">판매수</th>
-              <td>{{ state.oneBookData.hit }}</td>
-              <th scope="row">재고수</th>
-              <td>{{ state.oneBookData.hit }}</td>
-            </tr>
-            <tr>
-              <th scope="row">작가소개</th>
-              <td colspan="3">{{ state.oneBookData.authorInfo }}</td>
-            </tr>
-            <tr>
-              <th scope="row">책소개</th>
-              <td colspan="3">{{ state.oneBookData.content }}</td>
+              <th scope="row">내용</th>
+              <td colspan="3">{{ state.detailrow.content }}</td>
             </tr>
           </tbody>
         </table>
+        <div id="register_wrap">
+          <button @click="reviewDelete()">삭제</button>
+        </div>
       </div>
     </div>
   </div>
@@ -64,42 +51,54 @@ export default {
   },
 
   setup() {
+    const route = useRoute();
     const router = useRouter();
 
-    const route = useRoute();
-
     const state = reactive({
-      id: route.query.id,
-      oneBookData: [],
+      reviewid: route.query.id,
+      detailrow: [],
+      regDate: "",
     });
 
-    //도서 1개 데이터 수신
-    const oneBookData = async () => {
+    //게시글 상세데이터 수신
+    const reviewdetail = async () => {
       await axios
-        .get(`/api/bookone?id=${state.id}`)
+        .get(`/api/reviewone?id=${state.reviewid}`)
         .then((res) => {
-          console.log("도서 1개 데이터", res);
-          state.oneBookData = res.data;
+          console.log("상세", res);
+          state.detailrow = res.data;
+          state.regDate = res.data.regDate.slice(0, 10);
         })
         .catch((err) => {
           console.log(err);
         });
     };
 
-    //수정페이지 이동
-    const goRevise = () => {
-      router.push({ path: "/admin/book/edit", query: { id: state.id } });
+    //리뷰 삭제
+    const reviewDelete = () => {
+      axios
+        .delete(`/api/review/${state.reviewid}`)
+        .then(() => {
+          alert("삭제되었습니다.");
+          router.push({
+            path: "/admin/review",
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          alert("삭제시 오류가발생하였습니다.");
+        });
     };
 
     onMounted(() => {
-      oneBookData();
+      reviewdetail();
     });
 
-    return { state, goRevise };
+    return { state, reviewDelete };
   },
 };
 </script>
-import
+
 <style lang="css" scoped>
 /*초기화 */
 * {
@@ -144,7 +143,7 @@ a:hover {
   font-size: 24px;
   font-weight: bold;
   margin-top: 50px;
-  margin-bottom: 20px;
+  margin-bottom: 50px;
 }
 
 button {
@@ -153,6 +152,7 @@ button {
   color: white;
   background: black;
   margin-bottom: 30px;
+  margin-left: 10px;
 }
 
 #edit {
@@ -168,6 +168,12 @@ button {
 }
 
 th {
+  width: 200px;
   background: rgb(184, 184, 184);
+}
+
+#register_wrap {
+  display: flex;
+  justify-content: center;
 }
 </style>
