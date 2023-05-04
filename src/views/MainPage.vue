@@ -55,105 +55,20 @@
             </div>
           </div>
           <div class="content_bottom">
-            <div class="content_book_wrap" @click="godetail()">
+            <div
+              class="content_book_wrap"
+              v-for="(data, idx) in state.bestsellerrow"
+              :key="idx"
+            >
               <p class="c_ranking">01.</p>
               <img
-                src="../assets/MainPage/book1.jpg"
+                src="../assets/MainPage/book3.jpg"
                 alt="book1"
                 class="c_image"
+                @click="godetail(data.id)"
               />
-              <p class="c_title">세이노의 가르침</p>
-              <p class="c_author">세이원·데이원</p>
-            </div>
-            <div class="content_book_wrap">
-              <p class="c_ranking">02.</p>
-              <img
-                src="../assets/MainPage/book2.jpg"
-                alt="book2"
-                class="c_image"
-              />
-              <p class="c_title">세이노의 가르침</p>
-              <p class="c_author">세이원·데이원</p>
-            </div>
-            <div class="content_book_wrap">
-              <p class="c_ranking">03.</p>
-              <img
-                src="../assets/MainPage/book3.jpg"
-                alt="book3"
-                class="c_image"
-              />
-              <p class="c_title">세이노의 가르침</p>
-              <p class="c_author">세이원·데이원</p>
-            </div>
-            <div class="content_book_wrap">
-              <p class="c_ranking">04.</p>
-              <img
-                src="../assets/MainPage/book4.jpg"
-                alt="book4"
-                class="c_image"
-              />
-              <p class="c_title">세이노의 가르침</p>
-              <p class="c_author">세이원·데이원</p>
-            </div>
-            <div class="content_book_wrap">
-              <p class="c_ranking">05.</p>
-              <img
-                src="../assets/MainPage/book5.jpg"
-                alt="book5"
-                class="c_image"
-              />
-              <p class="c_title">세이노의 가르침</p>
-              <p class="c_author">세이원·데이원</p>
-            </div>
-            <div class="content_book_wrap">
-              <p class="c_ranking">06.</p>
-              <img
-                src="../assets/MainPage/book1.jpg"
-                alt="book1"
-                class="c_image"
-              />
-              <p class="c_title">세이노의 가르침</p>
-              <p class="c_author">세이원·데이원</p>
-            </div>
-            <div class="content_book_wrap">
-              <p class="c_ranking">07.</p>
-              <img
-                src="../assets/MainPage/book2.jpg"
-                alt="book2"
-                class="c_image"
-              />
-              <p class="c_title">세이노의 가르침</p>
-              <p class="c_author">세이원·데이원</p>
-            </div>
-            <div class="content_book_wrap">
-              <p class="c_ranking">08.</p>
-              <img
-                src="../assets/MainPage/book3.jpg"
-                alt="book3"
-                class="c_image"
-              />
-              <p class="c_title">세이노의 가르침</p>
-              <p class="c_author">세이원·데이원</p>
-            </div>
-            <div class="content_book_wrap">
-              <p class="c_ranking">09.</p>
-              <img
-                src="../assets/MainPage/book4.jpg"
-                alt="book4"
-                class="c_image"
-              />
-              <p class="c_title">세이노의 가르침</p>
-              <p class="c_author">세이원·데이원</p>
-            </div>
-            <div class="content_book_wrap">
-              <p class="c_ranking">10.</p>
-              <img
-                src="../assets/MainPage/book5.jpg"
-                alt="book5"
-                class="c_image"
-              />
-              <p class="c_title">세이노의 가르침</p>
-              <p class="c_author">세이원·데이원</p>
+              <p class="c_title">{{ data.bookName }}</p>
+              <p class="c_author">{{ data.author }}</p>
             </div>
           </div>
         </div>
@@ -322,10 +237,27 @@ export default {
       birth: "",
       email: "",
       snsType: "",
+      page: 0,
+      size: 10,
+      bestsellerrow: [],
     });
 
-    const godetail = () => {
-      router.push({ path: "/book", query: { id: 1 } });
+    //상세페이지 이동
+    const godetail = (id) => {
+      router.push({ path: "/book", query: { id: id } });
+    };
+
+    //책 리스트 수신
+    const getBookAll = async () => {
+      await axios
+        .get(`/api/bestsellerbookall?page=${state.page}&size=${state.size}`)
+        .then((res) => {
+          console.log("베스트셀러 목록", res);
+          state.bestsellerrow = res.data.content;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     };
 
     // NAVER 콜백 받는 로직
@@ -475,6 +407,7 @@ export default {
 
     onMounted(() => {
       naverCallback();
+      getBookAll(); //베스트셀러 수신
     });
 
     return {

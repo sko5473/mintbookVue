@@ -23,7 +23,7 @@ import JoinPage from "../views/JoinPage";
 import FindIdPw from "../views/FindIdPw";
 import MyPage from "../views/MyPage/MyPage";
 import MyInfoEditPage from "../views/MyPage/MyInfoEditPage";
-import ChoicePage from "../views/MyPage/ChoicePage";
+import MyPickPage from "../views/MyPage/MyPickPage";
 import CashPointPage from "../views/MyPage/CashPointPage";
 import InquirePage from "../views/MyPage/InquirePage";
 import MyReviewList from "../views/MyPage/MyReviewList";
@@ -80,9 +80,9 @@ const routes = [
     component: MyPage,
   },
   {
-    path: "/mypage/choice",
-    name: "choice",
-    component: ChoicePage,
+    path: "/mypage/mypick",
+    name: "mypick",
+    component: MyPickPage,
   },
   {
     path: "/mypage/cashpoint",

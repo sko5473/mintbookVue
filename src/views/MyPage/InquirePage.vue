@@ -12,7 +12,7 @@
       <div id="menu_area">
         <ul>
           <li><a href="/mypage/mypage">구매내역</a></li>
-          <li><a href="/mypage/choice">찜</a></li>
+          <li><a href="/mypage/mypick">찜</a></li>
           <li><a href="/mypage/cashpoint">캐시/포인트</a></li>
           <li><a href="/mypage/inquire" id="current">1:1 문의내역</a></li>
           <li><a href="/mypage/review/list">리뷰내역</a></li>

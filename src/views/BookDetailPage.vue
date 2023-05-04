@@ -64,7 +64,20 @@
             </tr>
             <tr>
               <td colspan="2" id="button_bottom">
-                <button id="like">♥</button>
+                <button
+                  id="dislike"
+                  @click="addWishList()"
+                  v-if="state.checkwishlist === false"
+                >
+                  ♡
+                </button>
+                <button
+                  id="like"
+                  @click="deleteWishList()"
+                  v-if="state.checkwishlist === true"
+                >
+                  ♥
+                </button>
                 <button id="cart">장바구니</button>
                 <button id="buy">바로구매</button>
               </td>
@@ -333,7 +346,7 @@
 </template>
 
 <script>
-import { reactive, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
 
@@ -346,6 +359,7 @@ export default {
       star: 0, //리뷰 평점
       content: "", //리뷰 내용
       bookId: route.query.id,
+      checkwishlist: "",
     });
 
     //리뷰 작성
@@ -367,14 +381,59 @@ export default {
         });
     };
 
+    //찜 추가
+    const addWishList = async () => {
+      await axios
+        .post(`/api/wishlist?id=${state.bookId}`)
+        .then(() => {
+          state.checkwishlist = true;
+        })
+        .catch((err) => {
+          console.log(err);
+          alert("찜 추가 실패");
+        });
+    };
+
+    //찜 삭제
+    const deleteWishList = async () => {
+      await axios
+        .delete(`/api/wishlist?id=${state.bookId}`)
+        .then(() => {
+          state.checkwishlist = false;
+        })
+        .catch((err) => {
+          console.log(err);
+          alert("찜 삭제 실패");
+        });
+    };
+
+    //찜 유무 체크
+    const checkwishlist = async () => {
+      await axios
+        .get(`/api/checkwishlist?id=${state.bookId}`)
+        .then((res) => {
+          console.log("찜유무", res);
+          state.checkwishlist = res.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
     const handleChange = (value) => {
       console.log(value);
     };
+
+    onMounted(() => {
+      checkwishlist(); //찜 유무 체크
+    });
 
     return {
       state,
       handleChange,
       reviewWrite,
+      addWishList, //찜 추가
+      deleteWishList, //찜 삭제
     };
   },
 };
@@ -507,6 +566,13 @@ a {
   border: 0.5px solid #b1b1b1;
   background-color: white;
   color: red;
+  margin-right: 10.5px;
+}
+
+#dislike {
+  border: 0.5px solid #b1b1b1;
+  background-color: white;
+  color: #b1b1b1;
   margin-right: 10.5px;
 }
 

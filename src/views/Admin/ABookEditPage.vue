@@ -139,6 +139,7 @@ export default {
         })
         .then(() => {
           alert("수정되었습니다.");
+          router.push({ path: "/admin/book/detail", query: { id: state.id } });
         })
         .catch((err) => {
           console.log(err);
