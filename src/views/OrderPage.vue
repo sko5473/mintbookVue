@@ -9,21 +9,13 @@
       <div class="orderproduct_section">
         <p class="section_title">주문상품</p>
         <table class="table">
-          <tr>
+          <tr v-for="(data, idx) in state.preBuyInfo" :key="idx">
             <td id="orderlist_left">
-              <p>방주</p>
-              <p class="orderlist_author">유키 하루오 지음, 김은모 옮김</p>
+              <p>{{ data.bookName }}</p>
+              <p class="orderlist_author">{{data.author}}</p>
             </td>
-            <td id="orderlist_center">1</td>
-            <td id="orderlist_right">14,500원</td>
-          </tr>
-          <tr>
-            <td id="orderlist_left">
-              <p>방주</p>
-              <p class="orderlist_author">유키 하루오 지음, 김은모 옮김</p>
-            </td>
-            <td id="orderlist_center">1</td>
-            <td id="orderlist_right">14,500원</td>
+            <td id="orderlist_center">{{data.buyCount}}</td>
+            <td id="orderlist_right">{{data.price}}원</td>
           </tr>
         </table>
       </div>
@@ -152,14 +144,24 @@
 </template>
 
 <script>
-import { reactive } from "vue";
+import { onMounted, reactive } from "vue";
 
 export default {
   setup() {
     const state = reactive({
       paymentmethod: "",
+      preBuyInfo: [],
     });
 
+    //결제관련 책정보 1개 수신
+    const getPreBuyInfo = () => {
+      state.preBuyInfo = JSON.parse(sessionStorage.getItem('preBuyInfo'));
+    }
+
+    onMounted(()=>{
+      getPreBuyInfo(); //결제관련 책정보 1개 수신
+    });
+    
     return {
       state,
     };
@@ -479,5 +481,8 @@ input[type="radio"]:checked + label {
   margin-top: 20px;
   font-size: 14px;
   color: #939393;
+}
+#orderlist_left > p{
+  padding:0;
 }
 </style>

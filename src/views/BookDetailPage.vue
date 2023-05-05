@@ -5,8 +5,8 @@
       <div class="top_wrap">
         <div class="top_top_wrap">
           <div id="top_top_left">
-            <p id="top_title">{{state.onbookrow.bookName}}</p>
-            <p id="top_author">{{state.onbookrow.author}}(지은이) | {{state.onbookrow.publisher}} | {{state.onbookrow.publishDate}}</p>
+            <p id="top_title">{{state.onebookrow.bookName}}</p>
+            <p id="top_author">{{state.onebookrow.author}}(지은이) | {{state.onebookrow.publisher}} | {{state.onebookrow.publishDate}}</p>
           </div>
           <div id="top_top_right">
             <img src="../assets/BookDetailPage/share.png" alt="share" />
@@ -19,19 +19,19 @@
           <table class="top_bottom_right">
             <tr>
               <td class="right_left">정가</td>
-              <td class="right_right">{{ state.onbookrow.price }}</td>
+              <td class="right_right">{{ state.onebookrow.price }}</td>
             </tr>
             <tr class="line">
               <td class="right_left">판매가</td>
               <td class="right_right">
-                <label id="price">{{ state.onbookrow.price * 0.9 }}</label>
+                <label id="price">{{ state.onebookrow.price * 0.9 }}</label>
                 <label id="discount">(10%)</label>
               </td>
             </tr>
             <tr>
               <td class="right_left">적립금</td>
               <td class="right_right">
-                <label>{{ state.onbookrow.price * 0.05 }}</label>
+                <label>{{ state.onebookrow.price * 0.05 }}</label>
                 <label id="point">(5%)</label>
               </td>
             </tr>
@@ -42,13 +42,13 @@
             <tr class="line">
               <td class="right_left">독자평점</td>
               <td class="right_right">
-                <label id="review">{{ state.onbookrow.star }}</label><label>/5점</label>
+                <label id="review">{{ state.onebookrow.star }}</label><label>/5점</label>
               </td>
             </tr>
             <tr class="line">
               <td class="right_left">수량</td>
               <td class="right_right">
-                <el-input-number v-model="state.num" :min="1" :max="10" size="large" @change="handleChange(value)" />
+                <el-input-number v-model="state.bookcount" :min="1" :max="10" size="large" />
               </td>
             </tr>
             <tr>
@@ -65,7 +65,7 @@
                   ♥
                 </button>
                 <button id="cart">장바구니</button>
-                <button id="buy">바로구매</button>
+                <button id="buy" @click="buynow()">바로구매</button>
               </td>
             </tr>
           </table>
@@ -120,8 +120,8 @@
         <div class="aboutinfo">
           <p class="content_title">기본정보</p>
           <ul class="content_content">
-            <li>• ISBN: {{state.onbookrow.isbn}}</li>
-            <li>• 출판일: {{state.onbookrow.publishDate}}</li>
+            <li>• ISBN: {{state.onebookrow.isbn}}</li>
+            <li>• 출판일: {{state.onebookrow.publishDate}}</li>
           </ul>
         </div>
       </div>
@@ -148,7 +148,7 @@
           v-model="state.content"></textarea>
         <div class="reviewlist_top">
           <div class="reviewlist_top_left">
-            <label class="reviewpoint" id="pointred">{{ state.onbookrow.star }}</label>
+            <label class="reviewpoint" id="pointred">{{ state.onebookrow.star }}</label>
             <label class="pointtotal">/5.0</label>
             의 평점을 받았어요!
           </div>
@@ -268,16 +268,17 @@
 </template>
 
 <script>
-import { onMounted, reactive, ref } from "vue";
-import { useRoute } from "vue-router";
+import { onMounted, reactive } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 
 export default {
   setup() {
     const route = useRoute();
+    const router = useRouter();
 
     const state = reactive({
-      num: ref(1),
+      bookcount: 0,
       star: 5, //리뷰 평점
       content: "", //리뷰 내용
       bookId: route.query.id,
@@ -286,9 +287,24 @@ export default {
       size: 5,
       onebookreviewrow: [],
       onebookreviewtotal: 0,
-      onbookrow: [],
+      onebookrow: [],
       reviewOrderStatus: "recent",
+
     });
+
+    //바로구매 클릭시 결제정보 미리보기 페이지 이동
+    const buynow = () => {
+      const preBuyInfo = [{
+        bookName: state.onebookrow.bookName,
+        author: state.onebookrow.author,
+        buyCount: state.bookcount,
+        price: state.onebookrow.price
+      }];
+      //이동전 세션스토리지에 결제미리보기 정보 전달
+      sessionStorage.setItem('preBuyInfo', JSON.stringify(preBuyInfo));
+
+      router.push({path : '/order'});
+    }
 
     //리뷰 정렬
     const handleOrderReview = async () => {
@@ -377,15 +393,11 @@ export default {
     const bookone = async () => {
       await axios.get(`/api/bookone?id=${state.bookId}`).then((res) => {
         console.log('도서 1개 데이터', res);
-        state.onbookrow = res.data;
+        state.onebookrow = res.data;
       }).catch((err) => {
         console.log(err);
       })
     }
-
-    const handleChange = (value) => {
-      console.log(value);
-    };
 
     //현재 책 리뷰 페이징 컨트롤
     const handlePage = (page) => {
@@ -401,12 +413,12 @@ export default {
 
     return {
       state,
-      handleChange,
       reviewWrite,
       addWishList, //찜 추가
       deleteWishList, //찜 삭제
       handlePage, //현재 책 리뷰 페이징 컨트롤
       handleOrderReview, //리뷰 정렬
+      buynow, //바로구매
     };
   },
 };
