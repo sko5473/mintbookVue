@@ -47,7 +47,7 @@
             <tr>
               <th scope="row">재고수</th>
               <td colspan="3">
-                <input type="text" v-model="state.hit" />
+                <input type="text" v-model="state.stock" />
               </td>
             </tr>
             <tr>
@@ -96,7 +96,7 @@ export default {
       publisher: "",
       author: "",
       bookName: "",
-      hit: "",
+      stock: "",
     });
 
     //도서 등록
@@ -108,7 +108,7 @@ export default {
           price: state.price,
           regDate: state.regDate,
           isbn: state.isbn,
-          hit: state.hit,
+          stock: state.stock,
           genre: state.genre,
           content: state.content,
           publisher: state.publisher,

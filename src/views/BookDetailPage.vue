@@ -5,8 +5,8 @@
       <div class="top_wrap">
         <div class="top_top_wrap">
           <div id="top_top_left">
-            <p id="top_title">세이노의 가르침</p>
-            <p id="top_author">세이노(지은이) | 데이원 | 2023년 03월 02일</p>
+            <p id="top_title">{{state.onbookrow.bookName}}</p>
+            <p id="top_author">{{state.onbookrow.author}}(지은이) | {{state.onbookrow.publisher}} | {{state.onbookrow.publishDate}}</p>
           </div>
           <div id="top_top_right">
             <img src="../assets/BookDetailPage/share.png" alt="share" />
@@ -19,19 +19,19 @@
           <table class="top_bottom_right">
             <tr>
               <td class="right_left">정가</td>
-              <td class="right_right">25,000원</td>
+              <td class="right_right">{{ state.onbookrow.price }}</td>
             </tr>
             <tr class="line">
               <td class="right_left">판매가</td>
               <td class="right_right">
-                <label id="price">22,500원</label>
+                <label id="price">{{ state.onbookrow.price * 0.9 }}</label>
                 <label id="discount">(10%)</label>
               </td>
             </tr>
             <tr>
               <td class="right_left">적립금</td>
               <td class="right_right">
-                <label>1,250원</label>
+                <label>{{ state.onbookrow.price * 0.05 }}</label>
                 <label id="point">(5%)</label>
               </td>
             </tr>
@@ -42,19 +42,13 @@
             <tr class="line">
               <td class="right_left">독자평점</td>
               <td class="right_right">
-                <label id="review">3.0</label><label>/5점</label>
+                <label id="review">{{ state.onbookrow.star }}</label><label>/5점</label>
               </td>
             </tr>
             <tr class="line">
               <td class="right_left">수량</td>
               <td class="right_right">
-                <el-input-number
-                  v-model="state.num"
-                  :min="1"
-                  :max="10"
-                  size="large"
-                  @change="handleChange(value)"
-                />
+                <el-input-number v-model="state.num" :min="1" :max="10" size="large" @change="handleChange(value)" />
               </td>
             </tr>
             <tr>
@@ -64,18 +58,10 @@
             </tr>
             <tr>
               <td colspan="2" id="button_bottom">
-                <button
-                  id="dislike"
-                  @click="addWishList()"
-                  v-if="state.checkwishlist === false"
-                >
+                <button id="dislike" @click="addWishList()" v-if="state.checkwishlist === false">
                   ♡
                 </button>
-                <button
-                  id="like"
-                  @click="deleteWishList()"
-                  v-if="state.checkwishlist === true"
-                >
+                <button id="like" @click="deleteWishList()" v-if="state.checkwishlist === true">
                   ♥
                 </button>
                 <button id="cart">장바구니</button>
@@ -134,15 +120,15 @@
         <div class="aboutinfo">
           <p class="content_title">기본정보</p>
           <ul class="content_content">
-            <li>• ISBN: 9791188331888</li>
-            <li>• 출판일: 2023년 03월 02일</li>
+            <li>• ISBN: {{state.onbookrow.isbn}}</li>
+            <li>• 출판일: {{state.onbookrow.publishDate}}</li>
           </ul>
         </div>
       </div>
       <div class="review_section">
         <div class="review_title">
           <label class="content_title">독자리뷰</label>
-          <label id="review_cnt"> (716)</label>
+          <label id="review_cnt"> ({{ state.onebookreviewtotal }})</label>
         </div>
         <div class="review_btn">
           <div id="review_btn_left">
@@ -158,127 +144,63 @@
             <button id="r_register_btn" @click="reviewWrite()">리뷰등록</button>
           </div>
         </div>
-        <textarea
-          name=""
-          id=""
-          rows="10"
-          placeholder="내용을 10자 이상 입력해 주세요. 주제와 무관한 댓글, 악플, 배송문의 등의 글은 임의 삭제될 수 있습니다."
-          v-model="state.content"
-        ></textarea>
+        <textarea name="" id="" rows="10" placeholder="내용을 10자 이상 입력해 주세요. 주제와 무관한 댓글, 악플, 배송문의 등의 글은 임의 삭제될 수 있습니다."
+          v-model="state.content"></textarea>
         <div class="reviewlist_top">
           <div class="reviewlist_top_left">
-            <label class="reviewpoint" id="pointred">4.5</label>
+            <label class="reviewpoint" id="pointred">{{ state.onbookrow.star }}</label>
             <label class="pointtotal">/5.0</label>
             의 평점을 받았어요!
           </div>
           <div class="reviewlist_top_right">
-            <select name="" id="">
-              <option value="">최신순</option>
-              <option value="">별점순</option>
+            <select v-model="state.reviewOrderStatus" @change="handleOrderReview">
+              <option value="recent">최신순</option>
+              <option value="star">별점순</option>
             </select>
           </div>
         </div>
         <table class="reviewlist">
-          <tr>
+          <tr v-for="(data, idx) in state.onebookreviewrow" :key="idx">
             <td class="reviewlist_left">
-              <label class="reviewpoint">4.5</label>
+              <label class="reviewpoint">{{ data.star }}</label>
               <label class="pointtotal">/5.0</label>
             </td>
             <td class="reviewlist_right">
-              <p class="reviewer">wlg**** | 2023.03.31</p>
-              <p>세이노의 가르침 덕분에 인생의 길이 달라졌습니다.</p>
-            </td>
-          </tr>
-          <tr>
-            <td class="reviewlist_left">
-              <label class="reviewpoint">4.5</label>
-              <label class="pointtotal">/5.0</label>
-            </td>
-            <td class="reviewlist_right">
-              <p class="reviewer">wlg**** | 2023.03.31</p>
-              <p>세이노의 가르침 덕분에 인생의 길이 달라졌습니다.</p>
-            </td>
-          </tr>
-          <tr>
-            <td class="reviewlist_left">
-              <label class="reviewpoint">4.5</label>
-              <label class="pointtotal">/5.0</label>
-            </td>
-            <td class="reviewlist_right">
-              <p class="reviewer">wlg**** | 2023.03.31</p>
-              <p>세이노의 가르침 덕분에 인생의 길이 달라졌습니다.</p>
-            </td>
-          </tr>
-          <tr>
-            <td class="reviewlist_left">
-              <label class="reviewpoint">4.5</label>
-              <label class="pointtotal">/5.0</label>
-            </td>
-            <td class="reviewlist_right">
-              <p class="reviewer">wlg**** | 2023.03.31</p>
-              <p>세이노의 가르침 덕분에 인생의 길이 달라졌습니다.</p>
-            </td>
-          </tr>
-          <tr>
-            <td class="reviewlist_left">
-              <label class="reviewpoint">4.5</label>
-              <label class="pointtotal">/5.0</label>
-            </td>
-            <td class="reviewlist_right">
-              <p class="reviewer">wlg**** | 2023.03.31</p>
-              <p>세이노의 가르침 덕분에 인생의 길이 달라졌습니다.</p>
+              <p class="reviewer">{{ data.writer.slice(0, 3) }}** | {{ data.regDate.slice(0, 10) }}</p>
+              <p>{{ data.content }}</p>
             </td>
           </tr>
         </table>
-        <div class="example-pagination-block">
-          <el-pagination layout="prev, pager, next" :total="100" />
+        <div id="pagination">
+          <el-pagination layout="prev, pager, next" :total="state.onebookreviewtotal" :page-size="5"
+            @current-change="handlePage" />
         </div>
       </div>
       <div class="recommend_section">
         <p class="content_title" id="recommend_title">이런 책도 추천해요!</p>
         <div class="content_bottom">
           <div class="content_book_wrap">
-            <img
-              src="../assets/MainPage/book1.jpg"
-              alt="book1"
-              class="c_image"
-            />
+            <img src="../assets/MainPage/book1.jpg" alt="book1" class="c_image" />
             <p class="c_title">세이노의 가르침</p>
             <p class="c_author">세이원·데이원</p>
           </div>
           <div class="content_book_wrap">
-            <img
-              src="../assets/MainPage/book2.jpg"
-              alt="book2"
-              class="c_image"
-            />
+            <img src="../assets/MainPage/book2.jpg" alt="book2" class="c_image" />
             <p class="c_title">세이노의 가르침</p>
             <p class="c_author">세이원·데이원</p>
           </div>
           <div class="content_book_wrap">
-            <img
-              src="../assets/MainPage/book3.jpg"
-              alt="book3"
-              class="c_image"
-            />
+            <img src="../assets/MainPage/book3.jpg" alt="book3" class="c_image" />
             <p class="c_title">세이노의 가르침</p>
             <p class="c_author">세이원·데이원</p>
           </div>
           <div class="content_book_wrap">
-            <img
-              src="../assets/MainPage/book4.jpg"
-              alt="book4"
-              class="c_image"
-            />
+            <img src="../assets/MainPage/book4.jpg" alt="book4" class="c_image" />
             <p class="c_title">세이노의 가르침</p>
             <p class="c_author">세이원·데이원</p>
           </div>
           <div class="content_book_wrap">
-            <img
-              src="../assets/MainPage/book5.jpg"
-              alt="book5"
-              class="c_image"
-            />
+            <img src="../assets/MainPage/book5.jpg" alt="book5" class="c_image" />
             <p class="c_title">세이노의 가르침</p>
             <p class="c_author">세이원·데이원</p>
           </div>
@@ -356,11 +278,31 @@ export default {
 
     const state = reactive({
       num: ref(1),
-      star: 0, //리뷰 평점
+      star: 5, //리뷰 평점
       content: "", //리뷰 내용
       bookId: route.query.id,
-      checkwishlist: "",
+      checkwishlist: false,
+      page: 0,
+      size: 5,
+      onebookreviewrow: [],
+      onebookreviewtotal: 0,
+      onbookrow: [],
+      reviewOrderStatus: "recent",
     });
+
+    //리뷰 정렬
+    const handleOrderReview = async () => {
+      if (state.reviewOrderStatus === "recent") {
+        reviewall();
+      } else if (state.reviewOrderStatus === "star") {
+        await axios.get(`/api/onebookreviewallorderbystar?bookid=${state.bookId}&page=${state.page}&size=${state.size}`).then((res) => {
+          console.log('현재 책 리뷰 목록 별점순', res);
+          state.onebookreviewrow = res.data.content;
+        }).catch((err) => {
+          console.log(err);
+        });
+      }
+    }
 
     //리뷰 작성
     const reviewWrite = async () => {
@@ -420,12 +362,41 @@ export default {
         });
     };
 
+    //현재 책 리뷰 목록
+    const reviewall = async () => {
+      axios.get(`/api/onebookreviewall?bookid=${state.bookId}&page=${state.page}&size=${state.size}`).then((res) => {
+        console.log('현재 책 리뷰 목록', res);
+        state.onebookreviewrow = res.data.content;
+        state.onebookreviewtotal = res.data.totalElements;
+      }).catch((err) => {
+        console.log(err);
+      });
+    };
+
+    //도서 1개 데이터 수신
+    const bookone = async () => {
+      await axios.get(`/api/bookone?id=${state.bookId}`).then((res) => {
+        console.log('도서 1개 데이터', res);
+        state.onbookrow = res.data;
+      }).catch((err) => {
+        console.log(err);
+      })
+    }
+
     const handleChange = (value) => {
       console.log(value);
     };
 
+    //현재 책 리뷰 페이징 컨트롤
+    const handlePage = (page) => {
+      state.page = page - 1;
+      reviewall();
+    };
+
     onMounted(() => {
       checkwishlist(); //찜 유무 체크
+      reviewall(); //현재 책 리뷰 목록
+      bookone(); //도서 1개 데이터 수신
     });
 
     return {
@@ -434,6 +405,8 @@ export default {
       reviewWrite,
       addWishList, //찜 추가
       deleteWishList, //찜 삭제
+      handlePage, //현재 책 리뷰 페이징 컨트롤
+      handleOrderReview, //리뷰 정렬
     };
   },
 };
@@ -498,7 +471,7 @@ a {
   text-align: right;
 }
 
-#top_top_right > img {
+#top_top_right>img {
   width: 30px;
   margin-top: 20px;
 }
@@ -510,7 +483,7 @@ a {
   margin-top: 30px;
 }
 
-.top_bottom_left > img {
+.top_bottom_left>img {
   width: 419px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
 }
@@ -533,10 +506,12 @@ a {
   font-size: 28px;
   color: #3ddca3;
 }
+
 #discount,
 #point {
   color: #7c7c7c;
 }
+
 #review {
   font-weight: bold;
   color: #df7474;
@@ -555,7 +530,7 @@ a {
   text-align: right;
 }
 
-#button_bottom > button {
+#button_bottom>button {
   width: 193px;
   height: 62px;
   border-radius: 10px;
@@ -597,6 +572,7 @@ a {
   margin-top: 100px;
   border-bottom: 0.5px solid #bdbdbd;
 }
+
 .content_title {
   font-size: 32px;
   color: #3ddca3;
@@ -608,7 +584,7 @@ a {
   color: #808080;
 }
 
-.content > div {
+.content>div {
   margin-top: 50px;
   margin-bottom: 100px;
 }
@@ -619,6 +595,7 @@ a {
   margin-top: 50px;
   padding-bottom: 200px;
 }
+
 .review_title {
   margin-bottom: 50px;
 }
@@ -652,7 +629,7 @@ select {
   font-weight: bold;
 }
 
-select > option {
+select>option {
   font-size: 12px;
   margin: 20px;
 }
@@ -682,6 +659,7 @@ textarea {
   box-sizing: border-box;
   margin-bottom: 50px;
 }
+
 /*리뷰리스트영역 */
 .reviewlist_top {
   display: grid;
@@ -723,6 +701,7 @@ textarea {
   padding-bottom: 25px;
   border-bottom: 0.5px solid #bdbdbd;
 }
+
 .reviewlist_left {
   width: 120px;
 }
@@ -732,9 +711,9 @@ textarea {
   margin-bottom: 10px;
 }
 
-.example-pagination-block {
-  width: 320px;
-  margin: 0 auto;
+#pagination {
+  display: flex;
+  justify-content: center;
   margin-top: 50px;
 }
 

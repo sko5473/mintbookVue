@@ -50,7 +50,7 @@
               <td>{{ data.author }}</td>
               <td>{{ data.publisher }}</td>
               <td>{{ data.publishDate }}</td>
-              <td>{{ data.hit }}</td>
+              <td>{{ data.stock }}</td>
               <td>{{ data.price }}</td>
             </tr>
           </tbody>

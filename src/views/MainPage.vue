@@ -545,6 +545,7 @@ a:hover {
 .c_image {
   width: 210px;
   border: 0.5px solid #c6c4c4;
+  cursor: pointer;
 }
 
 .c_title {

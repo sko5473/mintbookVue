@@ -24,7 +24,7 @@ import FindIdPw from "../views/FindIdPw";
 import MyPage from "../views/MyPage/MyPage";
 import MyInfoEditPage from "../views/MyPage/MyInfoEditPage";
 import MyPickPage from "../views/MyPage/MyPickPage";
-import CashPointPage from "../views/MyPage/CashPointPage";
+import MyCashPointPage from "../views/MyPage/MyCashPointPage";
 import InquirePage from "../views/MyPage/InquirePage";
 import MyReviewList from "../views/MyPage/MyReviewList";
 import MyReviewDetailPage from "../views/MyPage/MyReviewDetailPage";
@@ -87,7 +87,7 @@ const routes = [
   {
     path: "/mypage/cashpoint",
     name: "cashpoint",
-    component: CashPointPage,
+    component: MyCashPointPage,
   },
   {
     path: "/mypage/inquire",
