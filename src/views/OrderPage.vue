@@ -12,10 +12,10 @@
           <tr v-for="(data, idx) in state.preBuyInfo" :key="idx">
             <td id="orderlist_left">
               <p>{{ data.bookName }}</p>
-              <p class="orderlist_author">{{data.author}}</p>
+              <p class="orderlist_author">{{ data.author }}</p>
             </td>
-            <td id="orderlist_center">{{data.buyCount}}</td>
-            <td id="orderlist_right">{{data.price}}원</td>
+            <td id="orderlist_center">{{ data.buyCount }}</td>
+            <td id="orderlist_right">{{ data.price }}원</td>
           </tr>
         </table>
       </div>
@@ -29,37 +29,37 @@
           <tr>
             <td class="address_table_left">수령자명</td>
             <td class="address_table_right">
-              <input type="text" placeholder="홍길동" />
+              <input type="text" v-model="state.oneMemberInfo.name" />
             </td>
           </tr>
           <tr>
             <td class="address_table_left">전화번호</td>
             <td class="address_table_right">
-              <input type="text" placeholder="051-1234-1234" />
+              <input type="text" v-model="state.oneMemberInfo.phone" />
             </td>
           </tr>
           <tr>
             <td class="address_table_left">휴대전화</td>
             <td class="address_table_right">
-              <input type="text" placeholder="010-1234-1234" />
+              <input type="text" v-model="state.oneMemberInfo.phone" />
             </td>
           </tr>
           <tr>
             <td class="address_table_left">주소</td>
-            <td class="address_table_right">
-              <input
-                type="text"
-                placeholder="부산광역시 부산진구 중앙대로 668(A1프라자6층)"
-                id="input_address1"
-              />
-              <button id="addresssearch_btn">주소검색</button>
-              <br />
-              <input
-                type="text"
-                placeholder="동성직업전문학교"
-                id="input_address2"
-              />
-            </td>
+            <input type="text" id="sample6_postcode" v-model="state.postcode" placeholder="우편번호"
+              class="address_table_right" />
+            <input type="button" @click="sample6_execDaumPostcode()" value="우편번호 찾기" class="addresssearch_btn"
+              style="margin-left:10px;" /><br />
+          </tr>
+          <tr>
+            <td class="address_table_left"></td>
+            <input type="text" id="sample6_address" v-model="state.address" placeholder="주소" class="address_table_right"
+              style="margin-top:10px;" /><br />
+          </tr>
+          <tr>
+            <td class="address_table_left"></td>
+            <input type="text" id="sample6_detailAddress" v-model="state.detailaddress" placeholder="상세주소"
+              class="address_table_right" style="margin-top:10px;" />
           </tr>
         </table>
       </div>
@@ -68,14 +68,14 @@
         <table class="table" id="cashtable">
           <tr>
             <td class="dc_dt1">포인트</td>
-            <td class="dc_dt2">2,000원</td>
+            <td class="dc_dt2">{{ state.oneMemberInfo.point }}원</td>
             <td class="dc_dt3">
-              <input type="text" />
+              <input type="text" v-model="state.applyPoint" />
             </td>
             <td class="dc_dt4">
-              <button class="dc_btn">포인트적용</button>
+              <button class="dc_btn" @click="applyPoint()">포인트적용</button>
             </td>
-            <td class="dc_dt5">사용가능한포인트: 2,000 Point</td>
+            <td class="dc_dt5">사용가능한포인트: {{ state.oneMemberInfo.point }} Point</td>
           </tr>
         </table>
       </div>
@@ -84,23 +84,11 @@
         <table class="table">
           <tr>
             <td id="payment_td">
-              <input
-                type="radio"
-                v-model="state.paymentmethod"
-                value="creditcard"
-                name="method"
-                id="pay1"
-                class="radiobtn"
-              />
+              <input type="radio" v-model="state.paymentmethod" value="creditcard" name="method" id="pay1"
+                class="radiobtn" />
               <label for="pay1">신용카드</label>
-              <input
-                type="radio"
-                v-model="state.paymentmethod"
-                value="deposit"
-                name="method"
-                id="pay2"
-                class="radiobtn"
-              />
+              <input type="radio" v-model="state.paymentmethod" value="deposit" name="method" id="pay2"
+                class="radiobtn" />
               <label for="pay2">무통장입금</label>
             </td>
           </tr>
@@ -112,7 +100,7 @@
           <div class="paybox">
             <div>
               <label class="label1">상품 주문 총액</label>
-              <label>32,000원</label>
+              <label>{{ state.totalOrderPrice }}원</label>
             </div>
             <div>
               <label class="label1">배송비</label>
@@ -123,7 +111,7 @@
           <div class="paybox">
             <div>
               <label class="label1">포인트 적용</label>
-              <label>32,000원</label>
+              <label>{{ state.applyPoint }}원</label>
             </div>
             <div>
               <label class="label1">캐시 적용</label>
@@ -133,7 +121,7 @@
           <div class="calc">=</div>
           <div id="finalbox">
             <p class="finaltext">최종 결제 금액</p>
-            <p class="finalprice">28,000원</p>
+            <p class="finalprice">{{ state.finalPrice }}원</p>
             <button id="borderbtn">주문하기</button>
           </div>
         </div>
@@ -144,26 +132,76 @@
 </template>
 
 <script>
+import axios from "axios";
 import { onMounted, reactive } from "vue";
 
 export default {
   setup() {
     const state = reactive({
       paymentmethod: "",
-      preBuyInfo: [],
+      preBuyInfo: [], //결제미리보기 정보
+      oneMemberInfo: "", //회원 정보
+      applyPoint: 0, //사용포인트
+      preUsePoint: 0, //사용 전 포인트
+      totalOrderPrice: 0, //상품 주문 총액
+      finalPrice: 0, //최종 결제 금액
     });
+
+    //포인트 적용
+    const applyPoint = () => {
+      //사용 전 포인트보다 현재포인트가 더 작다면
+      if (state.preUsePoint > state.oneMemberInfo.point) {
+        //사용 전 포인트로 포인트 갱신
+        state.oneMemberInfo.point = state.preUsePoint;
+      }
+      //포인트 차감 적용
+      state.oneMemberInfo.point = state.oneMemberInfo.point - state.applyPoint;
+      //포인트 적용 후 결제 금액 갱신
+      calTotalPrice(1);
+    }
+
+    //상품 주문 총액, 최종 결제 금액 계산
+    const calTotalPrice = (info) => {
+      //포인트 적용 후 결제 금액 갱신일때만
+      if (info === 1) {
+        //최종결제 금액 계산
+        state.finalPrice = state.totalOrderPrice - state.applyPoint;
+      } else {
+        //상품주문총액
+        for (var i = 0; i < state.preBuyInfo.length; i++) {
+          //상품가격 X 상품수량을 상품 수만큼 계속 더해준다.
+          state.totalOrderPrice = state.totalOrderPrice + (state.preBuyInfo[i].price * state.preBuyInfo[i].buyCount);
+        }
+        state.finalPrice = state.totalOrderPrice;
+      }
+    }
 
     //결제관련 책정보 1개 수신
     const getPreBuyInfo = () => {
       state.preBuyInfo = JSON.parse(sessionStorage.getItem('preBuyInfo'));
     }
 
-    onMounted(()=>{
+    //멤버정보 수신
+    const getOneMemberInfo = async () => {
+      await axios.get(`/api/members/one`).then((res) => {
+        console.log(res);
+        state.oneMemberInfo = res.data;
+        state.preUsePoint = res.data.point;
+      }).catch((err) => {
+        console.log(err);
+      })
+    }
+
+    onMounted(() => {
       getPreBuyInfo(); //결제관련 책정보 1개 수신
+      getOneMemberInfo(); //1명 멤버 정보 수신
+      calTotalPrice(); //상품 주문 총액, 최종 결제 금액 계산
     });
-    
+
     return {
       state,
+      applyPoint, //포인트 적용
+      calTotalPrice, //상품 주문 총액, 최종 결제 금액 계산
     };
   },
 };
@@ -203,11 +241,12 @@ a {
   margin-top: 40px;
   margin-bottom: 50px;
 }
-.maintitle_wrap > li {
+
+.maintitle_wrap>li {
   float: left;
 }
 
-.maintitle_wrap > li > img {
+.maintitle_wrap>li>img {
   width: 35px;
   margin-right: 10px;
 }
@@ -270,28 +309,25 @@ a {
   padding-bottom: 50px;
   border-bottom: 1px solid #cccccc;
 }
+
 .address_table_left {
   font-weight: bold;
   width: 100px;
   vertical-align: top;
 }
 
-.address_table_left,
-.address_table_right {
-  padding-bottom: 10px;
-  padding-top: 10px;
-}
-
 input[type="text"] {
   height: 39px;
-  outline-style: none; /* 포커스시 발생하는 효과 제거를 원한다면 */
-  -webkit-appearance: none; /* 브라우저별 기본 스타일링 제거 */
+  outline-style: none;
+  /* 포커스시 발생하는 효과 제거를 원한다면 */
+  -webkit-appearance: none;
+  /* 브라우저별 기본 스타일링 제거 */
   -moz-appearance: none;
   appearance: none;
   border: 0.5px solid #c0c0c0;
   border-radius: 6px;
   padding-left: 10px;
-  box-sizing: content-box;
+  width: 500px;
 }
 
 #input_address1 {
@@ -304,7 +340,7 @@ input[type="text"] {
   width: 500px;
 }
 
-#addresssearch_btn {
+.addresssearch_btn {
   width: 130px;
   height: 39px;
   border-radius: 6px;
@@ -324,6 +360,7 @@ input[type="text"] {
 #cashtable {
   vertical-align: middle;
 }
+
 .dc_dt1 {
   font-weight: bold;
   width: 100px;
@@ -337,11 +374,13 @@ input[type="text"] {
   padding-right: 20px;
   border-bottom-width: 0px;
 }
+
 .dc_dt3 {
   width: 320px;
   border-bottom-width: 0px;
 }
-.dc_dt3 > input {
+
+.dc_dt3>input {
   width: 300px;
 }
 
@@ -389,14 +428,14 @@ input[type="radio"] {
   display: none;
 }
 
-input[type="radio"] + label {
+input[type="radio"]+label {
   padding: 15px 40px;
   border-radius: 6px;
   border: 0.5px solid #c0c0c0;
   margin-right: 20px;
 }
 
-input[type="radio"]:checked + label {
+input[type="radio"]:checked+label {
   background: #3ddca3;
   border: 0.5px solid #3ddca3;
   color: white;
@@ -482,7 +521,12 @@ input[type="radio"]:checked + label {
   font-size: 14px;
   color: #939393;
 }
-#orderlist_left > p{
-  padding:0;
+
+#orderlist_left>p {
+  padding: 0;
 }
-</style>
+
+.address_table_right,
+.address_table_left {
+  padding: 10px 0;
+}</style>
