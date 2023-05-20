@@ -47,6 +47,9 @@
         <li><a href="/cs">고객센터</a></li>
         <li><a href="/join">회원가입</a></li>
         <li><a href="/login" v-if="state.isLogin === false">로그인</a></li>
+        <el-button @click="flogin" v-if="!$store.state.flogin">페이스북 로그인</el-button>
+        <el-button @click="flogout" v-if="$store.state.flogin">페이스북 로그아웃</el-button>
+        {{ $store.state.flogin }}
         <li
           v-if="state.isLogin === true"
           @click="logout()"
@@ -116,6 +119,8 @@ export default {
       modalOpen: false,
       isLogin: "",
       isAdmin: "",
+      access: "",
+      fuserid: "",
     });
 
     const store = useStore();
@@ -149,10 +154,31 @@ export default {
         });
     };
 
+    //페이스북 로그인
+    const flogin = () => {
+      window.FB.login((res)=>{
+        console.log('로그인성공',res);
+        if(res.authResponse !==null){
+        store.commit("flogin");
+        }
+      })
+    }
+
+    const flogout = () => {
+      window.FB.logout((res)=>{
+        console.log('로그아웃 성공',res);
+        if(res.authResponse ==null){
+          store.commit("flogout");
+        }
+      })
+    }
+
     return {
       state,
       setModal,
       logout,
+      flogin,
+      flogout
     };
   },
 };

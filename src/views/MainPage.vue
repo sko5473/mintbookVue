@@ -24,7 +24,7 @@
           </ul>
         </div>
         <div id="slider_wrap">
-          <el-carousel height="407px">
+          <!-- <el-carousel height="407px">
             <el-carousel-item>
               <img src="../assets/MainPage/slide1.png" alt="slide1" />
             </el-carousel-item>
@@ -34,7 +34,7 @@
             <el-carousel-item>
               <img src="../assets/MainPage/slide3.png" alt="slide3" />
             </el-carousel-item>
-          </el-carousel>
+          </el-carousel> -->
         </div>
         <div id="notice_wrap">
           <div>공지사항</div>
@@ -248,166 +248,166 @@ export default {
     };
 
     //책 리스트 수신
-    const getBookAll = async () => {
-      await axios
-        .get(`/api/bestsellerbookall?page=${state.page}&size=${state.size}`)
-        .then((res) => {
-          console.log("베스트셀러 목록", res);
-          state.bestsellerrow = res.data.content;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
+    // const getBookAll = async () => {
+    //   await axios
+    //     .get(`/api/bestsellerbookall?page=${state.page}&size=${state.size}`)
+    //     .then((res) => {
+    //       console.log("베스트셀러 목록", res);
+    //       state.bestsellerrow = res.data.content;
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // };
 
     // NAVER 콜백 받는 로직
-    const naverCallback = async () => {
-      if (route.query.code !== undefined) {
-        console.log("route.query.code => ", route.query.code); //파라미터로 전달받은 code값
-        console.log("route.query.states => ", route.query.state); //파라미터로 전달받은 state값
+    // const naverCallback = async () => {
+    //   if (route.query.code !== undefined) {
+    //     console.log("route.query.code => ", route.query.code); //파라미터로 전달받은 code값
+    //     console.log("route.query.states => ", route.query.state); //파라미터로 전달받은 state값
 
-        //grant_type : 인증 과정에 대한 구분값 1) 발급:'authorization_code' 2) 갱신:'refresh_token' 3) 삭제: 'delete'
-        const url = `/oauth2.0/token?grant_type=authorization_code&client_id=${state.naverClientId}&client_secret=${state.naverclientSecret}&code=${state.navercode}&state=${state.naverstates}`;
-        const headers = {
-          "X-Naver-Client-Id": state.naverClientId,
-          "X-Naver-Client-Secret": state.naverclientSecret,
-        };
-        const { data } = await axios.get(url, { headers });
+    //     //grant_type : 인증 과정에 대한 구분값 1) 발급:'authorization_code' 2) 갱신:'refresh_token' 3) 삭제: 'delete'
+    //     const url = `/oauth2.0/token?grant_type=authorization_code&client_id=${state.naverClientId}&client_secret=${state.naverclientSecret}&code=${state.navercode}&state=${state.naverstates}`;
+    //     const headers = {
+    //       "X-Naver-Client-Id": state.naverClientId,
+    //       "X-Naver-Client-Secret": state.naverclientSecret,
+    //     };
+    //     const { data } = await axios.get(url, { headers });
 
-        console.log("data => ", data);
+    //     console.log("data => ", data);
 
-        console.log("data.access_token => ", data.access_token);
-        Cookies.set("naver_access_token", data.access_token);
+    //     console.log("data.access_token => ", data.access_token);
+    //     Cookies.set("naver_access_token", data.access_token);
 
-        console.log("data.refresh_token => ", data.refresh_token);
-        Cookies.set("naver_refresh_token", data.refresh_token);
+    //     console.log("data.refresh_token => ", data.refresh_token);
+    //     Cookies.set("naver_refresh_token", data.refresh_token);
 
-        naverUserInfo();
-      }
-    };
+    //     naverUserInfo();
+    //   }
+    // };
 
     //네이버 로그인 access토큰 만료시 intercept용
-    const naverapi = axios.create({
-      baseURL: "/",
-    });
+    // const naverapi = axios.create({
+    //   baseURL: "/",
+    // });
 
     // NAVER 사용자 정보 전달받기
-    const naverUserInfo = async () => {
-      const url = `/v1/nid/me`; //프로필 정보 조회URL
-      let header = "Bearer " + Cookies.get("naver_access_token");
-      const headers = { Authorization: header };
-      console.log("headers => ", headers);
-      const { data } = await naverapi.get(url, { headers });
-      console.log("*****naverUserInfo data***** => ", data);
+    // const naverUserInfo = async () => {
+    //   const url = `/v1/nid/me`; //프로필 정보 조회URL
+    //   let header = "Bearer " + Cookies.get("naver_access_token");
+    //   const headers = { Authorization: header };
+    //   console.log("headers => ", headers);
+    //   const { data } = await naverapi.get(url, { headers });
+    //   console.log("*****naverUserInfo data***** => ", data);
 
-      const date = new Date();
+    //   const date = new Date();
 
-      // 변수에 값 넣기(연동 회원가입에 사용)
-      state.email = data.response.email;
-      state.birth = date.getFullYear() + "-" + data.response.birthday; //05-23형식이므로 연도를 더해서 JAVA DateTime포맷을 맞춘다.
-      state.gender = data.response.gender;
-      state.snsId = data.response.id; //네이버에서 발급해주는 고유한 id값(기 연동된 유저인지 판별에 사용)
-      state.name = data.response.name;
-      state.snsProfile = data.response.profile_image;
-      state.snsType = "Naver";
+    //   // 변수에 값 넣기(연동 회원가입에 사용)
+    //   state.email = data.response.email;
+    //   state.birth = date.getFullYear() + "-" + data.response.birthday; //05-23형식이므로 연도를 더해서 JAVA DateTime포맷을 맞춘다.
+    //   state.gender = data.response.gender;
+    //   state.snsId = data.response.id; //네이버에서 발급해주는 고유한 id값(기 연동된 유저인지 판별에 사용)
+    //   state.name = data.response.name;
+    //   state.snsProfile = data.response.profile_image;
+    //   state.snsType = "Naver";
 
-      naverSnsIdCheck(state.snsId);
-    };
+    //   naverSnsIdCheck(state.snsId);
+    // };
 
     //네이버 access_Token만료시(401오류) refresh토큰으로 access토큰을 재발급
-    naverapi.interceptors.response.use(
-      (response) => response,
-      async (error) => {
-        const originalRequest = error.config;
+    // naverapi.interceptors.response.use(
+    //   (response) => response,
+    //   async (error) => {
+    //     const originalRequest = error.config;
 
-        //401에러거나 재시도한적이 없을 때
-        if (error.response.status === 401 && !originalRequest._retry) {
-          originalRequest._retry = true;
+    //     //401에러거나 재시도한적이 없을 때
+    //     if (error.response.status === 401 && !originalRequest._retry) {
+    //       originalRequest._retry = true;
 
-          //리프레쉬토큰 재발급 요청
-          const naverrefreshtoken = Cookies.get("naver_refresh_token");
+    //       //리프레쉬토큰 재발급 요청
+    //       const naverrefreshtoken = Cookies.get("naver_refresh_token");
 
-          await axios
-            .post(
-              `/oauth2.0/token?grant_type=refresh_token&client_id=${state.naverClientId}&client_secret=${state.naverclientSecret}&refresh_token=${naverrefreshtoken}`
-            )
-            .then((res) => {
-              //재발급 받은 access토큰을 다시 저장 후
-              state.naver_access_token = res.data.access_token;
-              //중단됐던 로직 재실행
-              naverUserInfo();
-            })
-            .catch((err) => {
-              console.log(err);
-              window.alert(
-                "네이버access토큰 재발급에 실패했습니다. 다시 로그인해주세요."
-              );
-              router.push({ path: "/login" });
-              return Promise.reject(error);
-            });
-        }
-        return Promise.reject(error);
-      }
-    );
+    //       await axios
+    //         .post(
+    //           `/oauth2.0/token?grant_type=refresh_token&client_id=${state.naverClientId}&client_secret=${state.naverclientSecret}&refresh_token=${naverrefreshtoken}`
+    //         )
+    //         .then((res) => {
+    //           //재발급 받은 access토큰을 다시 저장 후
+    //           state.naver_access_token = res.data.access_token;
+    //           //중단됐던 로직 재실행
+    //           naverUserInfo();
+    //         })
+    //         .catch((err) => {
+    //           console.log(err);
+    //           window.alert(
+    //             "네이버access토큰 재발급에 실패했습니다. 다시 로그인해주세요."
+    //           );
+    //           router.push({ path: "/login" });
+    //           return Promise.reject(error);
+    //         });
+    //     }
+    //     return Promise.reject(error);
+    //   }
+    // );
 
     //NAVER SNS 연동여부 확인
-    const naverSnsIdCheck = async (snsId) => {
-      await axios
-        .post(`/api/members/snscheck`, { snsId: snsId })
-        .then((res) => {
-          //조회 결과 sns연동계정이 있으면 로그인
-          if (res.data === true) {
-            axios
-              .post(`/api/members/snslogin`, { snsId: snsId })
-              .then((res) => {
-                console.log(res);
-                window.alert("로그인 하셨습니다.");
+    // const naverSnsIdCheck = async (snsId) => {
+    //   await axios
+    //     .post(`/api/members/snscheck`, { snsId: snsId })
+    //     .then((res) => {
+    //       //조회 결과 sns연동계정이 있으면 로그인
+    //       if (res.data === true) {
+    //         axios
+    //           .post(`/api/members/snslogin`, { snsId: snsId })
+    //           .then((res) => {
+    //             console.log(res);
+    //             window.alert("로그인 하셨습니다.");
 
-                //vuex에 로그인 결과값 저장
-                store.commit("login");
-              })
-              .catch((err) => {
-                console.log(err);
-                window.alert("로그인에 실패하셨습니다.");
-              });
-          } else {
-            // 없으면 회원가입
-            if (confirm("자동 회원가입 후 로그인하시겠습니까?")) {
-              axios
-                .post(`/api/members/snsjoin`, {
-                  email: state.email,
-                  birth: state.birth,
-                  gender: state.gender,
-                  snsId: state.snsId,
-                  name: state.name,
-                  snsProfile: state.snsProfile,
-                  snsType: state.snsType,
-                })
-                .then((res) => {
-                  console.log(res);
-                  window.alert("회원가입 후 로그인에 성공하셨습니다.");
+    //             //vuex에 로그인 결과값 저장
+    //             store.commit("login");
+    //           })
+    //           .catch((err) => {
+    //             console.log(err);
+    //             window.alert("로그인에 실패하셨습니다.");
+    //           });
+    //       } else {
+    //         // 없으면 회원가입
+    //         if (confirm("자동 회원가입 후 로그인하시겠습니까?")) {
+    //           axios
+    //             .post(`/api/members/snsjoin`, {
+    //               email: state.email,
+    //               birth: state.birth,
+    //               gender: state.gender,
+    //               snsId: state.snsId,
+    //               name: state.name,
+    //               snsProfile: state.snsProfile,
+    //               snsType: state.snsType,
+    //             })
+    //             .then((res) => {
+    //               console.log(res);
+    //               window.alert("회원가입 후 로그인에 성공하셨습니다.");
 
-                  //vuex에 로그인 결과값 저장
-                  store.commit("login");
-                })
-                .catch((err) => {
-                  console.log(err);
-                  window.alert("회원가입 후 로그인에 실패하셨습니다.");
-                  router.push({ path: "/login" });
-                });
-            } else {
-              return false;
-            }
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
+    //               //vuex에 로그인 결과값 저장
+    //               store.commit("login");
+    //             })
+    //             .catch((err) => {
+    //               console.log(err);
+    //               window.alert("회원가입 후 로그인에 실패하셨습니다.");
+    //               router.push({ path: "/login" });
+    //             });
+    //         } else {
+    //           return false;
+    //         }
+    //       }
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // };
 
     onMounted(() => {
-      naverCallback();
-      getBookAll(); //베스트셀러 수신
+      // naverCallback();
+      // getBookAll(); //베스트셀러 수신
     });
 
     return {

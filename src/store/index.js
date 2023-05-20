@@ -6,6 +6,7 @@ export default createStore({
     isLogin: false, //로그인 상태
     verifiedInfo: [],
     isAdmin: "CHECK",
+    flogin: false,
   },
 
   getters: {},
@@ -16,6 +17,12 @@ export default createStore({
       state.isLogin = true;
     },
 
+    flogin(state){
+      state.flogin = true;
+    },
+    flogout(state){
+      state.flogin = false;
+    },
     //로그아웃
     logout(state) {
       state.isLogin = false;
